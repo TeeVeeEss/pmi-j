@@ -7,11 +7,11 @@ The original IPM is available at https://github.com/akashgoswami/ipm
 To learn more about IOTA, please visit [iota.org](https://iota.org)
 
 
-![pmij snapshot](/public/img/ipm.jpg)
+![pmij snapshot](/public/img/pmij.png)
 
 ## How to install
 
-To install this package,
+Install this package by running this command:
 
 > npm i -g pmij
 
@@ -32,17 +32,14 @@ Example.
 pmij -i http://127.0.0.1:14265 -p 127.0.0.1:8888
 IPM will connect to IOTA endpoint and produce the status at localhost port 8888
 To view the dashboard, simply open a browser and point to http://127.0.0.1:8888
-
 ```
 
 ### As a daemon using systemd
-Copy the file located in systemd/pmij.service to /etc/systemd/system/pmij.service, modifying the parameters to match your setup.
+Copy the file located in systemd/pmij.service to /etc/systemd/system/pmij.service, modify the parameters to match your setup.
 Run `systemctl daemon-reload` for reloading your configuration. From here on you can use normal start/stop/status commands to manage pmij as a daemon.
 
 ## Persistent Tag
-
-Any custom tag assigned to a peer will be saved inside user's home directory in file pmij.conf
-In Windows this will be C:\Users\username and Linux it will be $HOME. If none of these could be found, it will try to create the file in current working directory.
+Any custom tag assigned to a peer will be saved inside user's home directory in file pmij.conf. In Windows this will be C:\Users\username and Linux it will be $HOME. If none of these could be found, it will try to create the file in current working directory.
 
 ## Peer management
-The program doesn't manages peers configured in IRI config files. If you delete or add a peer via the UI, please make sure to update it also in the IRI config.
+PMI-J does not manage peers configured in IRI config files. If you delete or add a peer using the webpage of PMI-J and you want to save this set of neighbors:  please make sure to update it also in the IRI config.
