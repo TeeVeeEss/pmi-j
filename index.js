@@ -67,7 +67,6 @@ function printHelp()
 
     console.log("PMI-J:    IOTA (Java) Peer Manager");
     console.log("        Manage and monitor IOTA peer health status in beautiful dashboard.");
-
     console.log("Usage:");
     console.log("pmij [--iri=iri_api_url] [--port=your_local_port] [--refresh=interval]");
     console.log("  -i --iri       = The API endpoint for IOTA IRI implementation (Full Node). ");
@@ -77,7 +76,7 @@ function printHelp()
     console.log("");
     console.log("Example.");
     console.log("pmij -i http://127.0.0.1:14800 -p 127.0.0.1:8888");
-    console.log("PMI-J will connect to IOTA endpoint and produce the status at localhost port 8888");            
+    console.log("PMI-J will connect to IOTA endpoint and produce the status at localhost port 8888");
     console.log("To view the dashboard, simply open a browser and point to http://127.0.0.1:8888");
     console.log("");
     process.exit(0);
@@ -148,7 +147,7 @@ io.on('connection', function (s) {
 
 // Create IOTA instance directly with provider
 var iota = new IOTA({
-    'provider': (argv.iri || 'http://localhost:14800')
+    'provider': (argv.iri || 'http://localhost:14265')
 });
 
 function updateNodeInfo(){
