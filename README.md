@@ -1,8 +1,8 @@
 !! Work in progress, absolute not ready for production or a working app !!
-# PMIJ
+# PMI-J
 Forked IOTA Peer Manager.
 
-PMIJ is a nodejs program for monitoring and managing IOTA peers connected with your IOTA Reference Implementation (IRI, Java version)
+PMI-J is a nodejs program for monitoring and managing IOTA peers connected with your IOTA Reference Implementation (IRI, Java version)
 The original IPM is available at https://github.com/akashgoswami/ipm
 To learn more about IOTA, please visit [iota.org](https://iota.org)
 
@@ -10,13 +10,11 @@ To learn more about IOTA, please visit [iota.org](https://iota.org)
 ![pmij snapshot](/public/img/pmij.png)
 
 ## How to install
-
 Install this package by running this command:
 
 > npm i -g pmij
 
 ## How to run
-
 ** Note: Before running this program, you should run your IOTA IRI or at least have a known IRI URI which is accessible. **
 
 > pmij

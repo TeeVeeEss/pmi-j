@@ -1,44 +1,33 @@
-var Template =`
-
-      <div class="col-sm-3 min-h-500">
-
-        <section class="panel" v-bind:class="[deadPeer ? 'panel-danger' : 'panel-default']" >
-            <header class="panel-heading bg-light no-border">
-                <div class="clearfix">
-                <div class="clear">
-                <a href="#" class="btn btn-xs btn-rounded btn-danger m-xs pull-right" v-on:click="removePeer">X</a>
-
-
-                <input class="h5" v-model="state.tag" v-on:keyup.enter="editTag" v-bind:class="[updating ? '' : 'tag-disabled']" :disabled="updating == 1 ? false : true" v-bind:size="state.tag.length">
-
-                <i v-on:click="editTag" v-bind:class="[updating ? 'fa fa-2x fa-check text-success' : 'fa fa-2x fa-pencil text-black-lt']"></i>
-
-                <div class="text-info text-md">{{state.connectionType}}://{{state.address}} {{state.domain}}</div>
-
-                </div>
-                </div>
-                </header>
-                 <div class="spark">
-                 <canvas :id="id" width="200" height="180" ></canvas>
-                 </div>
-
-                <div class="list-group-alt no-radius">
-
-                <div class="list-group-item" href="#"> <span class="badge bg-success">{{state.numberOfSentTransactions}}</span>Sent Transactions</div>
-                <div class="list-group-item" href="#"> <span class="badge bg-success">{{state.numberOfAllTransactions}}</span>Received Transactions</div>
-                <div class="list-group-item" href="#"> <span class="badge bg-success">{{state.numberOfNewTransactions}}</span>Received New Transactions</div>
-                <div class="list-group-item" href="#"> <span class="badge bg-success">{{state.numberOfRandomTransactionRequests}}</span>Received Random Transaction Requests</div>
-                <div class="list-group-item" href="#"> <span class="badge bg-success">{{state.numberOfStaleTransactions}}</span>Stale Transactions</div>
-                <div class="list-group-item" href="#"> <span class="badge bg-success">{{state.numberOfInvalidTransactions}}</span>Received Invalid Transactions</div>
-                </div>
-                </section>
-
-       </div>
+var Template =
+`
+  <div class="col-sm-3 min-h-500">
+    <section class="panel" v-bind:class="[deadPeer ? 'panel-danger' : 'panel-default']" >
+      <header class="panel-heading bg-light no-border">
+          <div class="clearfix">
+            <div class="clear">
+            <a href="#" class="btn btn-xs btn-rounded btn-danger m-xs pull-right" v-on:click="removePeer">X</a>
+            <input class="h5" v-model="state.tag" v-on:keyup.enter="editTag" v-bind:class="[updating ? '' : 'tag-disabled']" :disabled="updating == 1 ? false : true" v-bind:size="state.tag.length">
+            <i v-on:click="editTag" v-bind:class="[updating ? 'fa fa-2x fa-check text-success' : 'fa fa-2x fa-pencil text-black-lt']"></i>
+            <div class="text-info text-md">{{state.connectionType}}://{{state.address}} {{state.domain}}</div>
+            </div>
+          </div>
+      </header>
+           <div class="spark">
+            <canvas :id="id" width="200" height="180" ></canvas>
+           </div>
+          <div class="list-group-alt no-radius">
+            <div class="list-group-item" href="#"> <span class="badge bg-success">{{state.numberOfSentTransactions}}</span>Sent Transactions</div>
+            <div class="list-group-item" href="#"> <span class="badge bg-success">{{state.numberOfAllTransactions}}</span>Received Transactions</div>
+            <div class="list-group-item" href="#"> <span class="badge bg-success">{{state.numberOfNewTransactions}}</span>Received New Transactions</div>
+            <div class="list-group-item" href="#"> <span class="badge bg-success">{{state.numberOfRandomTransactionRequests}}</span>Received Random Transaction Requests</div>
+            <div class="list-group-item" href="#"> <span class="badge bg-success">{{state.numberOfStaleTransactions}}</span>Stale Transactions</div>
+            <div class="list-group-item" href="#"> <span class="badge bg-success">{{state.numberOfInvalidTransactions}}</span>Received Invalid Transactions</div>
+          </div>
+      </section>
+  </div>
 `;
 
-
 var peer = Vue.component('peer', {
-
   props: ['state'],
   template: Template,
   data: function (){
@@ -68,20 +57,16 @@ var peer = Vue.component('peer', {
               datasets: [
                 {
                   label: 'Rec TX',
-
                   data: []
                 },
                 {
                   label: 'New TX',
-
                   data: []
                 },
                 {
                   label: 'Sent TX',
-
                   data: []
                 },
-
               ]
             },
     options: {
@@ -98,7 +83,6 @@ var peer = Vue.component('peer', {
               boxWidth :10
             }
         }
-
       }
     });
   },
@@ -107,23 +91,19 @@ var peer = Vue.component('peer', {
     'state.history': function (newData) {
       //Object.assign(this.chartData,newData);
       Object.assign(this.myChart.data,newData);
-
       this.myChart.update();
     },
     'state.tag': function (newData, oldData) {
       //Object.assign(this.chartData,newData);
       socket.emit('updateTag', { address: this.state.address, tag:newData });
     },
-
   },
    methods: {
     editTag: function (event) {
       this.updating = !this.updating;
     },
-
     removePeer: function (event) {
       // `this` inside methods points to the Vue instance
-
       swal({
         title: 'Are you sure?',
         text: 'Removing Peer ' +  this.state.connectionType +"://"+this.state.address + '!',
