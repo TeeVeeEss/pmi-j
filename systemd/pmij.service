@@ -6,7 +6,7 @@ After=network.target
 User=iota
 Group=iota
 Type=simple
-ExecStart=/usr/bin/iota-pm -i http://127.0.0.1:14700 -p 0.0.0.0:8888
+ExecStart=/usr/bin/pmij -i http://127.0.0.1:14800 -p 0.0.0.0:8888
 Restart=on-failure
 RestartSec=5s
 

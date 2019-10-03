@@ -1,7 +1,7 @@
 {
-  "name": "iota-peers",
+  "name": "pmij",
   "version": "1.0.0",
-  "description": "An IOTA IRI peer manager",
+  "description": "An IOTA IRI (Java) peer manager",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,7 +9,8 @@
   "keywords": [
     "iota",
     "iota-node",
-    "peer"
+    "peer" ,
+    "fullnode"
   ],
   "author": "TeeVeeEss",
   "license": "MIT",
@@ -28,13 +29,13 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/akashgoswami/ipm.git"
+    "url": "git+https://github.com/TeeVeeEss/pmi-j.git"
   },
   "bin": {
-    "iota-pm": "./index.js"
+    "pmij": "./index.js"
   },
   "bugs": {
-    "url": "https://github.com/akashgoswami/ipm/issues"
+    "url": "https://github.com/TeeVeeEss/pmi-j/issues"
   },
-  "homepage": "https://github.com/akashgoswami/ipm#readme"
+  "homepage": "https://github.com/TeeVeeEss/pmi-j#readme"
 }

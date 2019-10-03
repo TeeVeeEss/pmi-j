@@ -15,14 +15,14 @@ var gNodeInfo = {};
 var gPeerInfo = [];
 var gTags = {};
 
-var tagFileName = (process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'] || process.cwd()) +"/iota-pm.conf";
+var tagFileName = (process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'] || process.cwd()) +"/pmij.conf";
 
 jsonfile.readFile(tagFileName, function(err, obj) {
       if (err) {
           console.log("Unable to locate any previous tag file at", tagFileName);
       }
       else if (obj) {
-          console.log("Restored tags from ", tagFileName);          
+          console.log("Restored tags from ", tagFileName);
           gTags = Object.assign(gTags, obj);
       }
 });
@@ -38,18 +38,18 @@ var sockets = [];
 
 
 var argv = minimist(process.argv.slice(2), {
-    string: [ 'iri' ],    
+    string: [ 'iri' ],
     alias: {
         h: 'help',
         i: 'iri',
-        u: 'auth',        
+        u: 'auth',
         r: 'refresh',
         p: 'port'
     }
 });
 
 if (argv.refresh) {
-    if (argv.refresh < 5 || argv.refresh > 600 )   
+    if (argv.refresh < 5 || argv.refresh > 600 )
     {
         console.log("Refresh Value must be within 5 to 600 seconds.");
         process.exit(0);
@@ -65,21 +65,21 @@ if (argv.help) printHelp();
 function printHelp()
 {
 
-    console.log("IPM:    IOTA Peer Manager");
-    console.log("        Manage and monitor IOTA peer health status in beautiful dashboard.");    
+    console.log("PMI-J:    IOTA (Java) Peer Manager");
+    console.log("        Manage and monitor IOTA peer health status in beautiful dashboard.");
 
-    console.log("Usage:");        
-    console.log("iota-pm [--iri=iri_api_url] [--port=your_local_port] [--refresh=interval]");
+    console.log("Usage:");
+    console.log("pmij [--iri=iri_api_url] [--port=your_local_port] [--refresh=interval]");
     console.log("  -i --iri       = The API endpoint for IOTA IRI implementation (Full Node). ");
-    console.log("  -p --port      = Local server IP and port where the dashboard web server should be running");    
-    console.log("  -r --refresh   = Refresh interval in seconds for IRI statistics gathering (default 10s)");    
-    console.log("  -h --help      = print this message");    
-    console.log("");            
-    console.log("Example.");            
-    console.log("iota-pm -i http://127.0.0.1:14800 -p 127.0.0.1:8888");            
-    console.log("IPM will connect to IOTA endpoint and produce the status at localhost port 8888");            
-    console.log("To view the dashboard, simply open a browser and point to http://127.0.0.1:8888");                
-    console.log("");       
+    console.log("  -p --port      = Local server IP and port where the dashboard web server should be running");
+    console.log("  -r --refresh   = Refresh interval in seconds for IRI statistics gathering (default 10s)");
+    console.log("  -h --help      = print this message");
+    console.log("");
+    console.log("Example.");
+    console.log("pmij -i http://127.0.0.1:14800 -p 127.0.0.1:8888");
+    console.log("PMI-J will connect to IOTA endpoint and produce the status at localhost port 8888");            
+    console.log("To view the dashboard, simply open a browser and point to http://127.0.0.1:8888");
+    console.log("");
     process.exit(0);
 };
 
@@ -102,7 +102,7 @@ io.on('connection', function (s) {
 	    sockets.splice(i, 1);
     }
   });
-  
+
   s.on('addPeer', function (data) {
     console.log("!!!!Adding peer",data);
     try{
@@ -121,7 +121,7 @@ io.on('connection', function (s) {
         s.emit('result', e.message);
     }
   });
-  
+
   s.on('removePeer', function (data) {
     console.log("!!!!Removing peer",data);
     try {
@@ -130,7 +130,7 @@ io.on('connection', function (s) {
             console.error(error);
             s.emit('result', error.message);
         } else {
-            s.emit('peerDeleted', data);            
+            s.emit('peerDeleted', data);
         }
         });
     }
@@ -138,7 +138,7 @@ io.on('connection', function (s) {
         s.emit('result', e.message);
     }
   });
-  
+
   s.on('updateTag', function (data) {
        gTags[data.address] = data.tag;
        saveConfig();
@@ -176,7 +176,7 @@ iota.api.getNeighbors(function(error, peers) {
         gPeerInfo = peers;
         updatePeerInfo();
     }
-});    
+});
 }
 
 setInterval(function(){
@@ -196,12 +196,12 @@ iota.api.getNodeInfo(function(error, success) {
         updateNodeInfo();
     }
 });
-    
+
 }
 
 getSystemInfo();
 getNeighbours();
-    
+
 setInterval(function(){
     getSystemInfo();
 },30000);
@@ -212,7 +212,7 @@ var host = "127.0.0.1";
 if (typeof argv.port === 'string'){
     var portArgs = argv.port.split(':');
     port = portArgs[1];
-    host = portArgs[0];    
+    host = portArgs[0];
 }
 else if (argv.port){
     port = argv.port;
