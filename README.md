@@ -1,6 +1,6 @@
-!! Work in progress, absolute not ready for production or a working app !!
+!! Work in progress, kind of ready for testing the app !!
 # PMI-J
-Forked IOTA Peer Manager.
+Responsive IOTA Peer Manager.
 
 PMI-J is a nodejs program for monitoring and managing IOTA peers connected with your IOTA Reference Implementation (IRI, Java version)
 The original IPM is available at https://github.com/akashgoswami/ipm
@@ -12,6 +12,20 @@ To learn more about IOTA, please visit [iota.org](https://iota.org)
 ** Note: Before running this program, you should run your IOTA IRI or at least have a known IRI URI which is accessible. **
 
 ## How to install
+### Using Docker
+Only local, not published...
+```
+git clone https://github.com/TeeVeeEss/pmi-j
+cd pmi-j
+```
+The Dockerfile is still WIP, but can be modified for your own configuation by changing the last line in Dockerfile:
+`CMD ["index.js", "-i", "http://192.168.178.12:14265", "-p", "192.168.178.22:9999"]`
+This line is now configured for running PMI-J at http://192.168.178.22:9999 and your IRI is running at http://192.168.178.12:14265
+Change the line to match your config. After that you can build the image with:
+`docker build -t teeveeess/pmij:latest -t teeveeess/pmij:v0.1 .`
+And run the container with:
+`docker run --name pmi-j --rm --init -it --network=host teeveeess/pmij:latest`
+The saving of Tags in pmij.conf is not available yet, need to check on the `-v` options of `docker run`
 ### Using npm package
 Install this package by running this command: (not yet published...)
 ```

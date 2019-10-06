@@ -14,5 +14,6 @@
 }
 
 .h6-word-wrap {
+    font-size: 12px;
     overflow-wrap: break-word;
 }
