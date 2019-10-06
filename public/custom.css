@@ -1,5 +1,4 @@
-.spark
-{
+.spark {
     max-height: 200px;
     padding: 20px;
 }
@@ -10,7 +9,10 @@
     border:none;
 }
 
-.min-h-500
-{
+.min-h-500 {
     min-height: 500px;
+}
+
+.h6-word-wrap {
+    overflow-wrap: break-word;
 }

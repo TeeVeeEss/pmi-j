@@ -44,8 +44,8 @@ var systemTemplate = {
   	</div>
       <div class="col-xs-8 dker">
                   <div class="p-a-md">
-                      	<h5>Latest Milestone Index: </h5><h3 class="_700 m-y">  {{nodeInfo.latestMilestoneIndex}} <span class="h6">({{nodeInfo.latestMilestone}})</span>	</h3>
-                      	<h5>Latest Solid Milestone Index: </h5><h3 class="_700 m-y">  {{nodeInfo.latestSolidSubtangleMilestoneIndex}} <span class="h6">({{nodeInfo.latestSolidSubtangleMilestone}})</span>	</h3>
+                      	<h5>Latest Milestone Index: </h5><h3 class="_700 m-y">  {{nodeInfo.latestMilestoneIndex}} <span class="h6-word-wrap">({{nodeInfo.latestMilestone}})</span>	</h3>
+                      	<h5>Latest Solid Milestone Index: </h5><h3 class="_700 m-y">  {{nodeInfo.latestSolidSubtangleMilestoneIndex}} <span class="h6-word-wrap">({{nodeInfo.latestSolidSubtangleMilestone}})</span>	</h3>
               			<div class="h5">
                   			<strong>Tips:</strong>
               				{{nodeInfo.tips}}
@@ -91,7 +91,7 @@ var systemTemplate = {
     showNeighbors: function (event){
         var n = "";
         vm.peers.forEach(function(peer){
-           n +=  peer.connectionType + "://" + peer.address + "\n"; 
+           n +=  peer.connectionType + "://" + peer.address + "\n";
         });
         var  display = "<pre class='code-preview text-left p-a'>"+ n + "</pre>";
 		swal({
