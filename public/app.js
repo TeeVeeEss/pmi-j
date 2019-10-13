@@ -78,11 +78,11 @@ var systemTemplate = {
       time: 1571001095561,
       tips: 2316,
       transactionsToRequest: 4549,
-      features: {
+      features: [
         'snapshotPruning',
         'dnsRefresher',
         'RemotePOW'
-        },
+        ],
       coordinatorAddress: 'EQSAUZXULTTYZCLNJNTXQTQHOMOFZERHTCGTXOLTVAHKSA9OGAZDEKECURBRIXIJWNPFCQIOVFVVXJVD9',
       duration: 0
       }
