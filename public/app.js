@@ -29,12 +29,12 @@ var systemTemplate = {
     <div class="row-col  light-blue-500  m-b-lg">
   	<div class="col-xs-4">
   		<div class="p-a-md">
-  			<h5>IRI Version </h5><h3 class="_700 m-y">  {{nodeInfo.appVersion}} 	</h3>
-  			<h5 class="_500">Neighbours</h5> <div class="h3 _700 m-y"> 	 {{nodeInfo.neighbors}}  &nbsp; <a v-on:click="showNeighbors"> <span class="h5">Show List</span> </a></div>
+      <h5>IRI Version </h5><h3 class="_700 m-y">  {{nodeInfo.appVersion}} 	</h3>
+  			<h5 class="_500">Neighbors</h5> <div class="h3 _700 m-y"> 	 {{nodeInfo.neighbors}}  &nbsp; <a v-on:click="showNeighbors"> <span class="h5">Show List</span> </a></div>
   			<h5>Add a new Peer</h5>
   			<div class="row">
   		<div class="col-lg-9">
-  			 <input type="text" v-model="address" placeholder="E.g. udp://11.22.33.44:18400" class="form-control">
+  			 <input type="text" v-model="address" placeholder="E.g. tcp://11.22.33.44:15600" class="form-control">
   			 </div>
   			 <div class="col-lg-3">
   			  <button type="button" v-on:click="addPeer" class="btn btn-success">Add Peer</button>
@@ -46,12 +46,11 @@ var systemTemplate = {
                   <div class="p-a-md">
                       	<h5>Latest Milestone Index: </h5><h3 class="_700 m-y">  {{nodeInfo.latestMilestoneIndex}} <span class="h6-word-wrap">({{nodeInfo.latestMilestone}})</span>	</h3>
                       	<h5>Latest Solid Milestone Index: </h5><h3 class="_700 m-y">  {{nodeInfo.latestSolidSubtangleMilestoneIndex}} <span class="h6-word-wrap">({{nodeInfo.latestSolidSubtangleMilestone}})</span>	</h3>
+                        <h5>Last snapshotted Milestone </h5><h3 class="_700 m-y">  {{nodeInfo.lastSnapshottedMilestoneIndex}} 	</h3>
               			<div class="h5">
                   			<strong>Tips:</strong>
               				{{nodeInfo.tips}}
-              			</div>
-              			<div class="h5">
-                  			<strong>Transactions to Request:</strong>
+                  			<strong>, Transactions to Request:</strong>
               				{{nodeInfo.transactionsToRequest}}
               			</div>
           </div>
@@ -62,23 +61,31 @@ var systemTemplate = {
    "data" : {
       address: "",
       nodeInfo : {
-      appName: 'IRI Testnet',
-      appVersion: '1.1.3.10',
+      appName: 'IRI Mainnet',
+      appVersion: '1.8.2-RELEASE',
       jreAvailableProcessors: 2,
       jreFreeMemory: 8948256,
-      jreVersion: '1.8.0_131',
+      jreVersion: '1.8.0_181',
       jreMaxMemory: 921174016,
       jreTotalMemory: 205520896,
-      latestMilestone: 'SWDRPWLUPTGYBD9XRFMPAPBHHYZPWVYBGWOMPZLMWCAVJPMIKLPFBLXQ9CCTLPGDZNLJLQAVAAKL99999',
-      latestMilestoneIndex: 74824,
+      latestMilestone: 'WRNDMSBCZMRJE9LZRVZA99IYPRAKRZXMLZFJSPPT9NZBCEFVADHINTOJVHSQVBPQQNNHBIHEXSZY99999',
+      latestMilestoneIndex: 1207856,
       latestSolidSubtangleMilestone: '999999999999999999999999999999999999999999999999999999999999999999999999999999999',
       latestSolidSubtangleMilestoneIndex: 0,
+      lastSnapshottedMilestoneIndex: 1207748,
       neighbors: 10,
       packetsQueueSize: 0,
-      time: 1499089430275,
+      time: 1571001095561,
       tips: 2316,
       transactionsToRequest: 4549,
-      duration: 0 }
+      features: {
+        'snapshotPruning',
+        'dnsRefresher',
+        'RemotePOW'
+        },
+      coordinatorAddress: 'EQSAUZXULTTYZCLNJNTXQTQHOMOFZERHTCGTXOLTVAHKSA9OGAZDEKECURBRIXIJWNPFCQIOVFVVXJVD9',
+      duration: 0
+      }
    },
    methods: {
     addPeer: function (event) {
