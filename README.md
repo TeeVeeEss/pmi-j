@@ -1,4 +1,16 @@
 !! Work in progress, kind of ready for testing the app !!
+# DEV-version!!!
+Start with:
+```
+git clone https://github.com/TeeVeeEss/pmi-j
+cd pmi-j
+git checkout es6
+cd dist
+pm2 serve --port 9876
+```
+The Dockerfile is NOT configured for DEV!
+Browse to http://127.0.0.1:9876 to see what's happening at your fullnode regarding peers ;-)
+
 # PMI-J
 Responsive IOTA Peer Manager.
 

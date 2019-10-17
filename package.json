@@ -2,9 +2,12 @@
   "name": "pmij",
   "version": "1.0.0",
   "description": "An IOTA IRI (Java) peer manager",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --watch",
+    "build": "webpack --mode=development",
+    "profile": "webpack --profile --json > compilation-stats.json"
   },
   "keywords": [
     "iota",
@@ -15,18 +18,34 @@
   "author": "TeeVeeEss",
   "license": "MIT",
   "dependencies": {
+    "@iota/core": "^1.0.0-",
     "async": "^3.1.0",
     "express": "^4.17.1",
     "express-basic-auth": "^1.2.0",
     "gentelella": "^1.4.0",
     "iota.lib.js": "^0.4.2",
-    "@iota/core": "^1.0.0-",
     "jsonfile": "^5.0.0",
+    "lodash": "^4.17.15",
     "minimist": "^1.2.0",
     "restler": "^3.4.0",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "sweetalert": "^2.1.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "clean-webpack-plugin": "^3.0.0",
+    "css-loader": "^3.2.0",
+    "csv-loader": "^3.0.2",
+    "eslint": "^6.5.1",
+    "eslint-config-google": "^0.14.0",
+    "eslint-loader": "^3.0.2",
+    "eslint-plugin-vue": "^5.2.3",
+    "file-loader": "^4.2.0",
+    "html-webpack-plugin": "^3.2.0",
+    "style-loader": "^1.0.0",
+    "webpack": "^4.41.1",
+    "webpack-cli": "^3.3.9",
+    "xml-loader": "^1.2.1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/TeeVeeEss/pmi-j.git"
