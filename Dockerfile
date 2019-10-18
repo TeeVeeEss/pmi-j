@@ -1,32 +1,45 @@
 # if you're doing anything beyond your local machine, please pin this to a specific version at https://hub.docker.com/_/node/
 # FROM node:8-alpine also works here for a smaller image
-FROM node:slim
+FROM node:latest
 
 # set our node environment, either development or production
 # defaults to production, compose overrides this to development on build and run
-ARG NODE_ENV=production
+ARG NODE_ENV=development
 ENV NODE_ENV $NODE_ENV
 
 # default to port 3000 for node, and 9229 and 9230 (tests) for debug
-# 9999 for app pmi-j
+# 9999 for app pmi-j, 9876 for DEV
 ARG PORT=3000
 ENV PORT $PORT
-EXPOSE $PORT 9229 9230 9999
+EXPOSE $PORT 9229 9230 9999 9876
 
 # you'll likely want the latest npm, regardless of node version, for speed and fixes
 # but pin this version for the best stability
 RUN npm i npm@latest -g
 
+# install pm2 for DEV-version
+#RUN npm i pm2@latest -g
+
+# Install DEV-packages
+#RUN npm install webpack webpack-cli style-loader file-loader csv-loader html-webpack-plugin clean-webpack-plugin eslint eslint-loader -g
+
 # install dependencies first, in a different location for easier app bind mounting for local development
 # due to default /opt permissions we have to create the dir with root and change perms
 RUN mkdir /opt/node_app && chown node:node /opt/node_app
 WORKDIR /opt/node_app
+
 # the official node image provides an unprivileged user as a security best practice
 # but we have to manually enable it. We put it here so npm installs dependencies as the same
 # user who runs the app. 
 # https://github.com/nodejs/docker-node/blob/master/docs/BestPractices.md#non-root-user
 USER node
-COPY package.json package-lock.json* ./
+#COPY package.json package-lock.json* ./
+COPY package.json ./
+
+# Install DEV-packages
+#RUN npm install webpack webpack-dev-server webpack-cli style-loader file-loader csv-loader html-webpack-plugin clean-webpack-plugin eslint eslint-loader --save-dev
+
+# Run normal install
 RUN npm install --no-optional && npm cache clean --force
 ENV PATH /opt/node_app/node_modules/.bin:$PATH
 
@@ -35,7 +48,10 @@ ENV PATH /opt/node_app/node_modules/.bin:$PATH
 
 # copy in our source code last, as it changes the most
 WORKDIR /opt/node_app
-COPY . .
+COPY . ./
+
+# Create webpack
+#RUN npm run builddev
 
 # Copy pmi-j.conf 
 #COPY ~/pmij.conf /home/node
@@ -44,7 +60,8 @@ COPY . .
 # Entrypoint used atm...
 #COPY docker-entrypoint.sh /usr/local/bin/
 #ENTRYPOINT ["docker-entrypoint.sh"]
-ENTRYPOINT ["node"]
+# DEV-version pm2 (docker-version), production probably node
+ENTRYPOINT ["npm"]
 
 
 # if you want to use npm start instead, then use `docker run --init in production`
@@ -53,4 +70,5 @@ ENTRYPOINT ["node"]
 # I still can't come up with a good production way to run with npm and graceful shutdown
 # CMD used atm...
 #CMD ["index.js", "-i", "http://192.168.178.12:14265", "-p", "192.168.178.22:9999"]
-CMD ["src/index.js"]
+# DEV-version:
+CMD ["run", "run-dev"]

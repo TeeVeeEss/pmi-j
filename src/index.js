@@ -7,6 +7,20 @@ import {composeAPI} from '@iota/core';
 import swal from 'sweetalert';
 
 /**
+ * Default responsive header
+ */
+// const head = document.querySelector('head');
+// const meta = document.createElement('meta');
+// meta.innerHTML = 'name="viewport" ' +
+//  'content="width=device-width, ' +
+//  'initial-scale=1"';
+// head.appendChild(meta);
+// document.head.textContext +=
+//  '<meta name="viewport" ' +
+//  'content="width=device-width, ' +
+//  'initial-scale=1" />';
+console.log('This is index JS....!');
+/**
  * Some testing lines how to select a html-node.
  * Connect to IRI endpoint.
  * iota.getNodeInfo to Show info of the IRI fullnode.
@@ -19,7 +33,7 @@ function component() {
 
   // Lodash, now imported by this script
   element.innerHTML = _.join(['Hello!',
-    'Welcom to the NEW ES6 Peer manager'], ' ');
+    'Welcom to the NEW ES6 Peer manager, now in DOCKER !'], ' ');
   element.classList.add('hello');
 
   btn.innerHTML = 'Click me and check the console!';
