@@ -8,6 +8,10 @@ module.exports = {
     app: './src/index.js',
     print: './src/print.js',
   },
+  watchOptions: {
+    aggregateTimeout: 600,
+    poll: 3000
+  },
   devtool: 'inline-source-map',
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
