@@ -6,10 +6,15 @@ git clone https://github.com/TeeVeeEss/pmi-j
 cd pmi-j
 git checkout es6
 cd dist
-pm2 serve --port 9876
+npm run run-dev
 ```
-The Dockerfile is NOT configured for DEV!
-Browse to http://127.0.0.1:9876 to see what's happening at your fullnode regarding peers ;-)
+Change your ip and port when needed in ``webpack.config.js`` and ``Dockerfile``.
+The Dockerfile is configured for DEV. You can start it with:
+```
+docker build -t teeveeess/pmij:dev .
+docker run --name pmij-dev --rm --init -it --network=host teeveeess/pmij:dev
+```
+Browse to http://your_ip:your_local_port to see what's happening at your fullnode regarding peers. No automatic refresh, that should be the next step...
 
 # PMI-J
 Responsive IOTA Peer Manager.
