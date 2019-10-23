@@ -19,7 +19,13 @@ module.exports = {
     host: '0.0.0.0',
     port: 9876,
     disableHostCheck: true,
-    historyApiFallback: true
+    historyApiFallback: true,
+    proxy: {
+      '/api': {
+      target: 'http://localhost:14265',
+      secure: false
+      }
+    }
   },
   plugins: [
     new CleanWebpackPlugin(),

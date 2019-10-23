@@ -43,7 +43,8 @@ function component() {
 
   // Connect to IRI
   const iota = composeAPI({
-    provider: 'http://192.168.178.12:14265',
+    //    provider: 'http://127.0.0.1:14265',
+    provider: '/api',
   });
 
   // Show getNodeInfo in console
