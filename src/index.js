@@ -5,6 +5,7 @@ import './style.css';
 // import printMe from './print.js';
 import {composeAPI} from '@iota/core';
 import swal from 'sweetalert';
+// import yargs from 'yargs';
 
 /**
  * Default responsive header
@@ -149,6 +150,7 @@ function divpeerinfo() {
         element.classList.add('peerinfo_connected');
         element.id = 'peerinfo';
         let peerCounter = 0;
+        let UnconnectedPeers = '';
         const totalPeers = aPeers.length;
         aPeers.forEach(function(oPeer) {
           peerCounter ++;
@@ -161,10 +163,10 @@ function divpeerinfo() {
           if (oPeer[1].connected == false) {
             div3.classList.replace('peerinfo_connected',
                 'peerinfo_unconnected');
-            swal('This peer is not connected:',
-                `Domain: ${oPeer[1].domain}, 
-                address: ${oPeer[1].address}`,
-                'warning');
+            UnconnectedPeers += '<div>Domain: '+
+              oPeer[1].domain+
+              ', address: '+oPeer[1].address+
+              '</div>';
           }
           aPeer.forEach(function(Peer) {
             str += '<div>'+Peer[0]+': '+Peer[1]+'</div>';
@@ -174,6 +176,15 @@ function divpeerinfo() {
           div3.innerHTML = str;
           // div2.appendChild(div3);
           element.appendChild(div3);
+          if (UnconnectedPeers.length > 0) {
+            const div = document.createElement('div');
+            div.innerHTML = UnconnectedPeers;
+            swal({
+              title: 'Not connected Peer(s):',
+              content: div,
+              icon: 'warning',
+            });
+          }
         });
         //        div2.innerHTML = str;
         // body.appendChild(div2);
@@ -261,5 +272,5 @@ setInterval(function() {
   document.body.replaceChild(divnodeinfo(), olddiv1);
   document.body.replaceChild(divpeerinfo(), olddiv2);
   // document.body.appendChild(component());
-}, 15000
+}, 15000,
 );
