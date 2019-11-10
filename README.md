@@ -24,7 +24,7 @@ The original IPM is available at https://github.com/akashgoswami/ipm
 To learn more about IOTA, please visit [iota.org](https://iota.org)
 
 
-![pmij snapshot](/public/img/pmij.png)
+![pmij snapshot](/public/img/image.png)
 
 ** Note: Before running this program, you should run your IOTA IRI or at least have a known IRI URI which is accessible. **
 
