@@ -82,8 +82,21 @@ function divnodeinfo() {
         // div2.id = 'nodeinfo';
         element.classList.add('nodeinfo');
         element.id = 'nodeinfo';
-        let str = '<div class="hello">Welcome to the NEW ES6 Peer manager'+
-          ', now running in DOCKER !</div><div>Nodeinfo</div>';
+        let str = '<div class="nodeinfo">'+
+          '<b>Welcome to the NEW ES6 Peer manager'+
+          ', now running in DOCKER !</b></div><div>Nodeinfo</div>';
+        if (info.latestMilestoneIndex !==
+          info.latestSolidSubtangleMilestoneIndex) {
+          // Unsynced!
+          str += '<div class="node_unsynced">'+
+          '<b>!!! Your node is Currently '+
+          'Unsynced !!!</b></div>';
+        } else {
+          // Synced
+          str += '<div class="node_synced">'+
+          '<b>Your node is Currently '+
+          'synced</b></div>';
+        }
         aNodeInfo.forEach(function(add) {
           str += '<div>'+add[0]+': '+add[1]+'</div>';
           if (add[0] == 'time') {

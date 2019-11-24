@@ -1,5 +1,10 @@
-.hello {
+.node_unsynced {
   color: red;
+  font-family: 'Titillium Web', sans-serif;
+  background: url('./logo.png');
+}
+.node_synced {
+  color: green;
   font-family: 'Titillium Web', sans-serif;
   background: url('./logo.png');
 }
@@ -15,4 +20,3 @@
   color: red;
   font-family: 'Titillium Web', sans-serif;
 }
-

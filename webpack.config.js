@@ -22,7 +22,7 @@ module.exports = {
     historyApiFallback: true,
     proxy: {
       '/api': {
-      target: 'http://192.168.178.12:14265',
+      target: 'http://127.0.0.1:14265',
       secure: false
       }
     }
