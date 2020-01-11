@@ -1,12 +1,12 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   mode: 'development',
   entry: {
     app: './src/index.js',
-    print: './src/print.js',
   },
   watchOptions: {
     aggregateTimeout: 600,
@@ -22,7 +22,7 @@ module.exports = {
     historyApiFallback: true,
     proxy: {
       '/api': {
-      target: 'http://127.0.0.1:14265',
+      target: 'http://192.168.178.12:14265',
       secure: false
       }
     }
@@ -37,6 +37,13 @@ module.exports = {
         removeComments: true,
         collapseWhitespace: false
       }
+    }),
+    new Dotenv({
+      path: './pmij.env', // load this now instead of the ones in '.env'
+      safe: true, // load '.env.example' to verify the '.env' variables are all set. Can also be a string to a different file.
+      systemvars: true, // load all the predefined 'process.env' variables which will trump anything local per dotenv specs.
+      silent: true, // hide any errors
+      defaults: false // load '.env.defaults' as the default values if empty.
     }),
   ],
   output: {

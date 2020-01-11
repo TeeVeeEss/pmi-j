@@ -7,40 +7,67 @@ import {composeAPI} from '@iota/core';
 import swal from 'sweetalert';
 // import yargs from 'yargs';
 
-/**
- * Default responsive header
- */
-// const head = document.querySelector('head');
-// const meta = document.createElement('meta');
-// meta.innerHTML = 'name="viewport" ' +
-//  'content="width=device-width, ' +
-//  'initial-scale=1"';
-// head.appendChild(meta);
-// document.head.textContext +=
-//  '<meta name="viewport" ' +
-//  'content="width=device-width, ' +
-//  'initial-scale=1" />';
 // console.log('This is index JS....!');
 // Lodash, now imported by this script
-// const btn = document.createElement('button');
 
-//  element.innerHTML = _.join(['Hello!',
-//    'Welcom to the NEW ES6 Peer manager, now in DOCKER !'], ' ');
-//  element.classList.add('hello');
-//  element.id = 'maindiv';
+/**
+ * Take a single camel case string and convert it to a string of separate
+ * @param {str} inCamelCaseString  The to be converted property-name.
+ * words (with spaces) at the camel-case boundaries. Show iota.properties
+ * as Human readable title.
+ * @return {str} formatted propertie.
+ */
+function camelCaseToTitleCase(inCamelCaseString) {
+  const result = inCamelCaseString
+  // "ToGetYourGEDInTimeASongAboutThe26ABCsIsOfTheEssenceButAPersonalIDCardFor
+  // User456InRoom26AContainingABC26TimesIsNotAsEasyAs123ForC3POOrR2D2Or2R2D"
+      .replace(/([a-z])([A-Z][a-z])/g, '$1 $2')
+  // "To Get YourGEDIn TimeASong About The26ABCs IsOf The Essence
+  // ButAPersonalIDCard For User456In Room26AContainingABC26Times IsNot AsEasy
+  // As123ForC3POOrR2D2Or2R2D"
+      .replace(/([A-Z][a-z])([A-Z])/g, '$1 $2')
+  // "To Get YourGEDIn TimeASong About The26ABCs Is Of The Essence
+  // ButAPersonalIDCard For User456In Room26AContainingABC26Times
+  // Is Not As Easy As123ForC3POOr R2D2Or2R2D"
+      .replace(/([a-z])([A-Z]+[a-z])/g, '$1 $2')
+  // "To Get Your GEDIn Time ASong About The26ABCs Is Of The Essence
+  // But APersonal IDCard For User456In Room26AContainingABC26Times
+  // Is Not As Easy As123ForC3POOr R2D2Or2R2D"
+      .replace(/([A-Z]+)([A-Z][a-z][a-z])/g, '$1 $2')
+  // "To Get Your GEDIn Time A Song About The26ABCs Is Of The Essence
+  // But A Personal ID Card For User456In Room26A ContainingABC26Times
+  // Is Not As Easy As123ForC3POOr R2D2Or2R2D"
+      .replace(/([a-z]+)([A-Z0-9]+)/g, '$1 $2')
+  // "To Get Your GEDIn Time A Song About The 26ABCs Is Of The Essence
+  // But A Personal ID Card For User 456In Room 26A Containing ABC26Times
+  // Is Not As Easy As 123For C3POOr R2D2Or 2R2D"
 
-//  btn.innerHTML = 'Click me and check the console!';
-//  btn.onclick = printMe;
+  // Note: the next regex includes a special case to exclude plurals of
+  // acronyms, e.g. "ABCs"
+      .replace(/([A-Z]+)([A-Z][a-rt-z][a-z]*)/g, '$1 $2')
+  // "To Get Your GED In Time A Song About The 26ABCs Is Of The Essence
+  // But A Personal ID Card For User 456In Room 26A Containing ABC26Times
+  // Is Not As Easy As 123For C3PO Or R2D2Or 2R2D"
+      .replace(/([0-9])([A-Z][a-z]+)/g, '$1 $2')
+  // "To Get Your GED In Time A Song About The 26ABCs Is Of The Essence
+  // But A Personal ID Card For User 456In Room 26A Containing ABC 26Times
+  // Is Not As Easy As 123For C3PO Or R2D2Or 2R2D"
 
-//  element.appendChild(btn);
+  // Note: the next two regexes use {2,} instead of + to add space on phrases
+  // like Room26A and 26ABCs but not on phrases like R2D2 and C3PO"
+      .replace(/([A-Z]{2,})([0-9]{2,})/g, '$1 $2')
+  // "To Get Your GED In Time A Song About The 26ABCs Is Of The Essence
+  // But A Personal ID Card For User 456 In Room 26A Containing ABC 26
+  // Times Is Not As Easy As 123 For C3PO Or R2D2 Or 2R2D"
+      .replace(/([0-9]{2,})([A-Z]{2,})/g, '$1 $2')
+  // "To Get Your GED In Time A Song About The 26 ABCs Is Of The Essence
+  // But A Personal ID Card For User 456 In Room 26A Containing ABC 26
+  // Times Is Not As Easy As 123 For C3PO Or R2D2 Or 2R2D"
+      .trim();
 
-// create nodeinfo and peerinfo div's in body
-// const div1 = document.createElement('div');
-// const div2 = document.createElement('div');
-// div1.id = 'nodeinfo';
-// div2.id = 'peerinfo';
-// document.body.appendChild(div1);
-// document.body.appendChild(div2);
+  // capitalize the first letter
+  return result.charAt(0).toUpperCase() + result.slice(1);
+}
 
 /**
  * Connect to IRI endpoint.
@@ -55,59 +82,53 @@ function divnodeinfo() {
   });
 
   const element = document.createElement('div');
-  // const btn = document.createElement('button');
-
-  //  // Show getNodeInfo in console
-  //  iota.getNodeInfo()
-  //      .then((info) => {
-  //        console.log(info);
-  //        // console.log(Object.entries(info));
-  //      })
-  //      .catch((error) => {
-  //        console.log(`Request error: ${error.message}`);
-  //      });
-
   // Show getNodeInfo in page
-  //  alert('hmm, eerst maar simpel...');
   iota.getNodeInfo()
       .then((info) => {
-        // return info.json();
         const aNodeInfo = Object.entries(info);
-        // const body = document.querySelector('body');
-        // const div = document.createElement('div');
-        // div.textContent = aNodeInfo;
-        // body.appendChild(div);
-        // const div2 = document.createElement('div');
-        // div2.classList.add('nodeinfo');
-        // div2.id = 'nodeinfo';
         element.classList.add('nodeinfo');
         element.id = 'nodeinfo';
         let str = '<div class="nodeinfo">'+
-          '<b>Welcome to the NEW ES6 Peer manager'+
-          ', now running in DOCKER !</b></div><div>Nodeinfo</div>';
-        if (info.latestMilestoneIndex !==
-          info.latestSolidSubtangleMilestoneIndex) {
-          // Unsynced!
-          str += '<div class="node_unsynced">'+
-          '<b>!!! Your node is Currently '+
-          'Unsynced !!!</b></div>';
-        } else {
-          // Synced
-          str += '<div class="node_synced">'+
-          '<b>Your node is Currently '+
-          'synced</b></div>';
+          'Nodeinfo, ';
+        const myDate = new Date(info.time);
+        str += 'Local Time: '+myDate.toLocaleString()+'</div>';
+        const syncdiff = info.latestMilestoneIndex -
+          info.latestSolidSubtangleMilestoneIndex;
+        switch (syncdiff) {
+          case 0:
+            // Synced
+            str += '<div class="node_synced">'+
+            '<b>Your node is currently '+
+            'Synced</b></div>';
+            break;
+          case 1:
+          case 2:
+          case 3:
+            // a few behind!
+            str += '<div class="node_warn_synced">'+
+            '<b>Your node is currently '+syncdiff+
+            ' milestone(s) behind</b></div>';
+            break;
+          default:
+            // Unsynced!
+            str += '<div class="node_unsynced">'+
+            '<b>!! Your node is currently '+
+            'Unsynced and '+syncdiff+
+            'milestones behind !!</b></div>';
+            swal({
+              title: 'Unsynced',
+              content: str,
+              icon: 'warning',
+            });
         }
+        str += '<div class="container-fluid text-break"><div class="row">';
         aNodeInfo.forEach(function(add) {
-          str += '<div>'+add[0]+': '+add[1]+'</div>';
-          if (add[0] == 'time') {
-            const myDate = new Date(add[1]);
-            str += '<div>Local Time: '+myDate.toLocaleString()+'</div>';
-          }
+          str += '<div class="col-sm-3 border"><b>'+
+          camelCaseToTitleCase(add[0])+': </b>'+
+          add[1]+'</div>';
         });
-        // div2.innerHTML = str;
+        str += '</div></div>';
         element.innerHTML = str;
-        // body.appendChild(div2);
-        // element.appendChild(div2);
       })
       .catch((error) => {
         console.log(`Request error: ${error.message}`);
@@ -129,66 +150,57 @@ function divpeerinfo() {
     provider: '/api',
   });
 
-  const element = document.createElement('div');
-
-  // Show getNeighbors in console
-  //  iota.getNeighbors()
-  //      .then((info) => {
-  //        console.log(info);
-  //        // console.log(Object.entries(info));
-  //        // console.log(info);
-  //      })
-  //      .catch((error) => {
-  //        console.log(`Request error: ${error.message}`);
-  //      });
+  const element = document.createElement('container');
 
   // Show getPeers in page
   iota.getNeighbors()
       .then((info) => {
-        // return info.json();
         const aPeers = Object.entries(info);
-        // const akPeers = Object.keys(aPeers);
-        // swal("Toon aPeers", `${aPeers}`, "info");
-        // swal("Toon akPeers", `${akPeers}`, "info");
-        // const body = document.querySelector('body');
-        // const div = document.createElement('div');
-        // div.textContent = Object.entries(aPeers[1]);
-        // body.appendChild(div);
-        // const div2 = document.createElement('div');
-        const str = '<div>Details of your peers<hr></div>';
-        // div2.innerHTML = str;
-        // div2.classList.add('peerinfo_connected');
-        // div2.id = 'peerinfo';
-        element.innerHTML = str;
+        let elementstr = '<div>Details of your peers</div>';
+        //        '<div class="container">';
+        //        '<div class="row">';
         element.classList.add('peerinfo_connected');
         element.id = 'peerinfo';
-        let peerCounter = 0;
         let UnconnectedPeers = '';
         const totalPeers = aPeers.length;
+        let peerCounter = 1;
+
+        /**
+        // Peers in Row and Columns
         aPeers.forEach(function(oPeer) {
-          peerCounter ++;
-          let str = '';
-          const div3 = document.createElement('div');
-          div3.classList.add('peerinfo_connected');
-          str += '<div>Peer '+peerCounter+' of '+totalPeers+'</div>';
           const aPeer = Object.entries(oPeer[1]);
-          // console.log(oPeer[1].connected);
-          if (oPeer[1].connected == false) {
-            div3.classList.replace('peerinfo_connected',
-                'peerinfo_unconnected');
-            UnconnectedPeers += '<div>Domain: '+
-              oPeer[1].domain+
-              ', address: '+oPeer[1].address+
-              '</div>';
+          let str = '';
+          switch (peerCounter) {
+            case 1:
+              // Header
+              str += '<div class="col-sm col-md border '+
+              'small text-right">'+
+              '<div>'+
+              'Peer Counter:</div>';
+              aPeer.forEach(function(Header) {
+                str += '<div class="border">'+
+                camelCaseToTitleCase(Header[0])+':</div>';
+              });
+              str += '</div>';
+            default:
+              // Values
+              str += '<div class="col-sm col-md border small';
+              if (oPeer[1].connected == false) {
+                UnconnectedPeers += '<div>Domain: '+
+                oPeer[1].domain+
+                ', address: '+oPeer[1].address+
+                '</div>';
+                str += ' peerinfo_unconnected';
+              }
+              str += '"><div>Peer '+
+              peerCounter+' of '+totalPeers+'</div>';
+              aPeer.forEach(function(Peer) {
+                str += '<div class="border">'+Peer[1]+'</div>';
+              });
+              str += '</div>';
           }
-          aPeer.forEach(function(Peer) {
-            str += '<div>'+Peer[0]+': '+Peer[1]+'</div>';
-            // console.log(Peer[1]);
-          });
-          str += '<hr>';
-          div3.innerHTML = str;
-          // div2.appendChild(div3);
-          element.appendChild(div3);
+          peerCounter ++;
+          elementstr += str;
           if (UnconnectedPeers.length > 0) {
             const div = document.createElement('div');
             div.innerHTML = UnconnectedPeers;
@@ -196,94 +208,80 @@ function divpeerinfo() {
               title: 'Not connected Peer(s):',
               content: div,
               icon: 'warning',
+              timer: 5000,
             });
           }
         });
-        //        div2.innerHTML = str;
-        // body.appendChild(div2);
-        // element.appendChild(div2);
+        elementstr += '</div></div>';
+**/
+        // Peers in Table
+        // open container for table
+        //        elementstr += '<div class="container">'+
+        elementstr += '<table class="table-striped table-hover'+
+          ' table-bordered table-responsive" style="text-align:center">';
+        peerCounter = 1;
+        aPeers.forEach(function(oPeer) {
+          const aPeer = Object.entries(oPeer[1]);
+          let str = '<tr>';
+          if (oPeer[1].connected == false) {
+            str = '<tr class="table-danger">';
+            UnconnectedPeers += '<div>Domain: '+
+              oPeer[1].domain+
+              ', address: '+oPeer[1].address+
+              '</div>';
+          }
+          switch (peerCounter) {
+            case 1:
+              // Header
+              str += '<th>'+
+              'Peer Counter</th>';
+              aPeer.forEach(function(Header) {
+                str += '<th>'+
+                camelCaseToTitleCase(Header[0])+'</th>';
+              });
+              str += '</tr><tr class="text-break">';
+            default:
+              // Values
+              str += '<td>';
+              str += peerCounter+' of '+totalPeers+'</td>';
+              aPeer.forEach(function(Peer) {
+                str += '<td>'+Peer[1]+'</td>';
+              });
+          }
+          str += '</tr>';
+          peerCounter ++;
+          elementstr += str;
+          if (UnconnectedPeers.length > 0) {
+            const div = document.createElement('div');
+            div.innerHTML = UnconnectedPeers;
+            swal({
+              title: 'Not connected Peer(s):',
+              content: div,
+              icon: 'warning',
+              timer: 5000,
+            });
+          }
+          // close table and container
+          //          str += '</table></container>';
+          str += '</table>';
+        });
+        elementstr += '</div>';
+        element.innerHTML = elementstr;
       })
       .catch((error) => {
         console.log(`Request error: ${error.message}`);
       });
-
-  // Add the image to our existing div.
-  //  const myLogo = new Image();
-  //  myLogo.src = Logo;
-
-  //  element.appendChild(myLogo);
-
-  //  console.log(Data);
-
   return element;
 }
 
-document.body.appendChild(divnodeinfo());
 document.body.appendChild(divpeerinfo());
-
-/**
- * Clean up the empty elements of a node
- * @param {str} node to be cleaned
- */
-// function clean(node)
-// {
-//  for(var n = 0; n < node.childNodes.length; n ++)
-//  {
-//    var child = node.childNodes[n];
-//    if
-//    (
-//      child.nodeType === 8
-//      ||
-//      (child.nodeType === 3 && !/\S/.test(child.nodeValue))
-//    )
-//    {
-//      node.removeChild(child);
-//      n --;
-//    }
-//    else if(child.nodeType === 1)
-//    {
-//      clean(child);
-//    }
-//  }
-// }
-
+document.body.appendChild(divnodeinfo());
 
 // Rebuild page every 15 seconds
 setInterval(function() {
-//  let olddivs = document.getElementsById("nodeinfo");
-//  console.log(olddivs);
-//  while (olddivs.firstChild) {
-//    olddivs.removeChild(olddivs.firstChild);
-//    }
-//  document.body.appendChild(component());
-//  document.body.appendChild(divnodeinfo());
-//  document.body.appendChild(divpeerinfo());
-//  let oldnodeinfo = document.getElementsById('nodeinfo');
-//  console.log(oldnodeinfo);
-//  while (oldnodeinfo.firstChild) {
-//    oldnodeinfo.removeChild(oldnodeinfo.firstChild);
-//    }
-//  const node1 = document.getElementById('nodeinfo');
-//  if (node1.parentNode) {
-//    node1.parentNode.removeChild(node1);
-//  }
-//  const node2 = document.getElementById('peerinfo');
-//  if (node2.parentNode) {
-//    node2.parentNode.removeChild(node2);
-//  }
-  const olddiv1 = document.getElementById('nodeinfo');
-  const olddiv2 = document.getElementById('peerinfo');
-  // if (olddiv1 !== null) {
-  // olddiv1.remove();
-  // }
-  // if (olddiv2 !== null) {
-  // olddiv2.remove();
-  // }
-  // clean(document.body);
-  // document.body.appendChild(divnodeinfo());
-  // document.body.appendChild(divpeerinfo());
-  document.body.replaceChild(divnodeinfo(), olddiv1);
-  document.body.replaceChild(divpeerinfo(), olddiv2);
-  // document.body.appendChild(component());
+  const olddiv1 = document.getElementById('peerinfo');
+  const olddiv2 = document.getElementById('nodeinfo');
+  document.body.replaceChild(divpeerinfo(), olddiv1);
+  document.body.replaceChild(divnodeinfo(), olddiv2);
 }, 15000,
 );

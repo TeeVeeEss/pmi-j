@@ -1,3 +1,8 @@
+.node_warn_synced {
+  color: orange;
+  font-family: 'Titillium Web', sans-serif;
+  background: url('./logo.png');
+}
 .node_unsynced {
   color: red;
   font-family: 'Titillium Web', sans-serif;
@@ -19,4 +24,14 @@
 .peerinfo_unconnected {
   color: red;
   font-family: 'Titillium Web', sans-serif;
+}
+.col
+{
+    float: left;
+    width: 25%;
+}
+.row{
+    border: 1px solid green;
+    overflow: hidden;  /* "overflow: auto;" works just as well instead */
+    width:100%;        /* Helps older versions of IE */
 }
