@@ -75,10 +75,19 @@ function camelCaseToTitleCase(inCamelCaseString) {
  * @return {str} formatted html.
  */
 function divnodeinfo() {
+  // for dev the endpoint is defined as proxy in webpack-dev-server
+  // for prod it's in env-variables
+  let providerstr = '';
+  if(process.env.NODE_ENV == 'production') {
+    providerstr += 'http://' +
+      process.env.IRI_NODE_IP + ':' + 
+      process.env.IRI_NODE_PORT;
+  else
+    providerstr += '/api';
+    }
   // Connect to IRI
   const iota = composeAPI({
-  // the endpoint is defined as proxy in webpack-dev-server
-    provider: '/api',
+    provider: providerstr
   });
 
   const element = document.createElement('div');

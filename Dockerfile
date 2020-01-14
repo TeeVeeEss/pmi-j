@@ -8,10 +8,10 @@ ARG NODE_ENV=development
 ENV NODE_ENV $NODE_ENV
 
 # default to port 3000 for node, and 9229 and 9230 (tests) for debug
-# 9999 for app pmi-j, 9876 for DEV, 14265 for IRI
-ARG PORT=3000
-ENV PORT $PORT
-EXPOSE $PORT 9229 9230 9999 9876 14265
+# 9999 for app pmi-j, 9876 for DEV, 9875 for proxy, 14265 for IRI
+#ARG PORT=3000
+#ENV PORT $PORT
+#EXPOSE $PORT 9229 9230 9999 9876 9875 14265
 
 # you'll likely want the latest npm, regardless of node version, for speed and fixes
 # but pin this version for the best stability
