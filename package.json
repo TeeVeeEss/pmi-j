@@ -23,7 +23,7 @@
     "iota.lib.js": "^0.4.2",
     "@iota/core": "^1.0.0-",
     "jsonfile": "^5.0.0",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.2",
     "restler": "^3.4.0",
     "socket.io": "^2.3.0"
   },
