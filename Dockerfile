@@ -41,7 +41,8 @@ COPY package.json ./
 #RUN npm install webpack webpack-dev-server webpack-cli style-loader file-loader csv-loader html-webpack-plugin clean-webpack-plugin eslint eslint-loader --save-dev
 
 # Run normal install
-RUN npm install --no-optional && npm cache clean --force
+#RUN npm install --no-optional && npm cache clean --force
+RUN npm install && npm cache clean --force
 ENV PATH /opt/node_app/node_modules/.bin:$PATH
 
 # check every 30s to ensure this service returns HTTP 200

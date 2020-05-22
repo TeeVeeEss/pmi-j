@@ -172,6 +172,7 @@ function divnodeinfoHline(node) {
         elementstr += '<th>Java Max RAM</th>';
         elementstr += '<th>LM</th>';
         elementstr += '<th>LSM</th>';
+        elementstr += '<th>Snapshot</th>';
         elementstr += '<th>Tips</th>';
         elementstr += '<th>Connected peers</th>';
         elementstr += '<th>Sync status</th>';
@@ -188,6 +189,7 @@ function divnodeinfoHline(node) {
         elementstr += '<td>'+formatBytes(info.jreMaxMemory, 2)+'</td>';
         elementstr += '<td>'+info.latestMilestoneIndex+'</td>';
         elementstr += '<td>'+info.latestSolidSubtangleMilestoneIndex+'</td>';
+        elementstr += '<td>'+info.lastSnapshottedMilestoneIndex+'</td>';
         elementstr += '<td>'+info.tips+'</td>';
         elementstr += '<td>'+info.neighbors+'</td>';
         switch (syncdiff) {
