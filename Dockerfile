@@ -4,6 +4,7 @@ FROM node:alpine
 
 # set our node environment, either development or production
 # defaults to production, compose overrides this to development on build and run
+#ARG NODE_ENV=production
 ARG NODE_ENV=development
 ENV NODE_ENV $NODE_ENV
 
@@ -53,8 +54,14 @@ WORKDIR /opt/node_app
 # Copy webpack config files
 COPY webpack.config.js .eslintrc.js ./
 
+# Copy env files
+COPY .env pmij.env pmij.env.defaults ./
+
 # Create webpack
-#RUN npm run builddev
+# PROD:
+#RUN npm run buildprod
+# DEV: started with ENTRYPPOINT en CMD
+
 
 # Copy pmi-j.conf 
 #COPY ~/pmij.conf /home/node
@@ -65,6 +72,8 @@ COPY webpack.config.js .eslintrc.js ./
 #ENTRYPOINT ["docker-entrypoint.sh"]
 # DEV-version pm2 (docker-version), production probably node
 ENTRYPOINT ["npm"]
+# PROD_entrypoint
+#ENTRYPOINT ["node"]
 
 
 # if you want to use npm start instead, then use `docker run --init in production`
@@ -75,3 +84,5 @@ ENTRYPOINT ["npm"]
 #CMD ["index.js", "-i", "http://192.168.178.12:14265", "-p", "192.168.178.22:9999"]
 # DEV-version:
 CMD ["run", "run-dev"]
+# PROD-version:
+#CMD ["index.js"]

@@ -17,6 +17,11 @@
   color: black;
   font-family: 'Titillium Web', sans-serif;
 }
+.iota_address {
+  color: black;
+  font-family: 'Titillium Web', sans-serif;
+  font-size: small;
+}
 .peerinfo_connected {
   color: blue;
   font-family: 'Titillium Web', sans-serif;
