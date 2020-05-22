@@ -9,17 +9,18 @@ cd dist
 npm run run-dev
 ```
 Change your ip and port when needed in ``webpack.config.js`` and ``Dockerfile``.
+Change the your node(s) in pmij.env
 The Dockerfile is configured for DEV. You can start it with:
 ```
 docker build -t teeveeess/pmij:dev .
-docker run --name pmij-dev --rm --init -it --network=host teeveeess/pmij:dev
+docker run --name pmij-dev --rm --init -it --network=host -v /path/to/pmi-j/src:/opt/node_app/src -v /path/to/pmi-j/pmij.env:/opt/node_app/pmij.env -v /etc/localtime:/etc/localtime:ro,Z teeveeess/pmij:dev
 ```
-Browse to http://your_ip:your_local_port to see what's happening at your fullnode regarding peers. No automatic refresh, that should be the next step...
+Browse to http://your_ip:your_local_port to see what's happening at your fullnodes and their peers. Refreshed every 10 seconds, Warning popups when a node has no peers or more than 5 milestones behind
 
 # PMI-J
 Responsive IOTA Peer Manager.
 
-PMI-J is a nodejs program for monitoring and managing IOTA peers connected with your IOTA Reference Implementation (IRI, Java version)
+PMI-J is a nodejs program for monitoring and managing IOTA peers connected with your IOTA nodes.
 The original IPM is available at https://github.com/akashgoswami/ipm
 To learn more about IOTA, please visit [iota.org](https://iota.org)
 
