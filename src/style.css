@@ -1,0 +1,42 @@
+.node_warn_synced {
+  color: orange;
+  font-family: 'Titillium Web', sans-serif;
+  background: url('./logo.png');
+}
+.node_unsynced {
+  color: red;
+  font-family: 'Titillium Web', sans-serif;
+  background: url('./logo.png');
+}
+.node_synced {
+  color: green;
+  font-family: 'Titillium Web', sans-serif;
+  background: url('./logo.png');
+}
+.nodeinfo {
+  color: black;
+  font-family: 'Titillium Web', sans-serif;
+}
+.iota_address {
+  color: black;
+  font-family: 'Titillium Web', sans-serif;
+  font-size: small;
+}
+.peerinfo_connected {
+  color: blue;
+  font-family: 'Titillium Web', sans-serif;
+}
+.peerinfo_unconnected {
+  color: red;
+  font-family: 'Titillium Web', sans-serif;
+}
+.col
+{
+    float: left;
+    width: 25%;
+}
+.row{
+    border: 1px solid green;
+    overflow: hidden;  /* "overflow: auto;" works just as well instead */
+    width:100%;        /* Helps older versions of IE */
+}
