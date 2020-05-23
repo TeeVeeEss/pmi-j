@@ -57,7 +57,7 @@
     "papaparse": "^5.2.0",
     "style-loader": "^1.2.1",
     "webpack-dev-server": "^3.11.0",
-    "xml-loader": "^1.2.1"
+    "xml-loader": "^1.2.1",
     "minimist": "^1.2.2",
     "restler": "^3.4.0",
     "socket.io": "^2.3.0"
