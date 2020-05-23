@@ -10,7 +10,9 @@
     "run-dev": "webpack-dev-server --open",
     "buildprod": "webpack --mode=production",
     "builddev": "webpack --mode=development",
-    "profile": "webpack --profile --json > compilation-stats.json"
+    "profile": "webpack --profile --json > compilation-stats.json",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "keywords": [
     "iota",
@@ -44,7 +46,8 @@
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
     "webpack-node-externals": "^1.7.2",
-    "yargs": "^14.2.3"
+    "yargs": "^14.2.3",
+    "snyk": "^1.324.0"
   },
   "devDependencies": {
     "css-loader": "^3.5.3",
@@ -72,5 +75,6 @@
   "bugs": {
     "url": "https://github.com/TeeVeeEss/pmi-j/issues"
   },
-  "homepage": "https://github.com/TeeVeeEss/pmi-j#readme"
+  "homepage": "https://github.com/TeeVeeEss/pmi-j#readme",
+  "snyk": true
 }
