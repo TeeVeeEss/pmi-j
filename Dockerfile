@@ -34,8 +34,9 @@ WORKDIR /opt/node_app
 # user who runs the app. 
 # https://github.com/nodejs/docker-node/blob/master/docs/BestPractices.md#non-root-user
 USER node
-#COPY package.json package-lock.json* ./
+#COPY package.json and snyk
 COPY package.json ./
+COPY .snyk ./
 
 # Install DEV-packages
 #RUN npm install webpack webpack-dev-server webpack-cli style-loader file-loader csv-loader html-webpack-plugin clean-webpack-plugin eslint eslint-loader --save-dev

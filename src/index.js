@@ -162,6 +162,7 @@ function divnodeinfoHline(node) {
           ' table-bordered table-responsive" style="text-align:center">';
         elementstr += '<tr>';
         elementstr += '<th>Node name</th>';
+        elementstr += '<th>Node Alias</th>';
         elementstr += '<th>Local Time</th>';
         elementstr += '<th>Node API</th>';
         elementstr += '<th>App name</th>';
@@ -179,6 +180,7 @@ function divnodeinfoHline(node) {
         elementstr += '<th>Features</th>';
         elementstr += '</tr><tr>';
         elementstr += '<td>'+node+'</td>';
+        elementstr += '<td>'+info.nodeAlias+'</td>';
         elementstr += '<td>'+myDate.toLocaleString()+'</td>';
         elementstr += '<td>'+providerstr+'</td>';
         elementstr += '<td>'+info.appName+'</td>';
