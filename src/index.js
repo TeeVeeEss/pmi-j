@@ -4,7 +4,8 @@ import './style.css';
 // import Data from './data.xml';
 // import printMe from './print.js';
 import {composeAPI} from '@iota/core';
-import swal from 'sweetalert';
+
+// import swal from 'sweetalert';
 // import yargs from 'yargs';
 
 // console.log('This is index JS....!');
@@ -175,7 +176,12 @@ function divnodeinfoHline(node) {
         elementstr += '<th>LSM</th>';
         elementstr += '<th>Snapshot</th>';
         elementstr += '<th>Tips</th>';
-        elementstr += '<th>Connected peers</th>';
+        if (info.appName == 'IRI') {
+          elementstr += '<th>Connected peers</th>';
+        }
+        if (info.appName == 'HORNET') {
+          elementstr += '<th>Known peers</th>';
+        }
         elementstr += '<th>Sync status</th>';
         elementstr += '<th>Features</th>';
         elementstr += '</tr><tr>';
@@ -223,16 +229,16 @@ function divnodeinfoHline(node) {
             elementstr += '<td class="node_unsynced">'+
             'Unsynced, ' + syncdiff +
             ' milestones behind !!</b></div>';
-            const div = document.createElement('div');
-            div.innerHTML = 'The node ' + providerstr +
-            'is ' + syncdiff +
-            ' milestones behind !!';
-            swal({
-              title: 'Unsynced',
-              content: div,
-              icon: 'warning',
-              timer: 5000,
-            });
+//            const div = document.createElement('div');
+//            div.innerHTML = 'The node ' + providerstr +
+//            'is ' + syncdiff +
+//            ' milestones behind !!';
+//            swal({
+//              title: 'Unsynced',
+//              content: div,
+//              icon: 'warning',
+//              timer: 5000,
+//            });
         }
         elementstr += '<td class="text-break">'+
           camelCaseToTitleCase(info.features.toString())+'</td>';
@@ -444,7 +450,7 @@ function divpeerinfo(node) {
         //        '<div class="row">';
         element.classList.add('peerinfo_connected');
         element.id = 'peerinfo_'+node;
-        let UnconnectedPeers = '';
+        //        let UnconnectedPeers = '';
         const totalPeers = aPeers.length;
         let peerCounter = 1;
         let peerCounterUnconnected = 0;
@@ -471,10 +477,10 @@ function divpeerinfo(node) {
           if (oPeer[1].connected == false) {
             str = '<tr class="table-danger">';
             peerCounterUnconnected ++;
-            UnconnectedPeers += '<div>Domain: '+
-              oPeer[1].domain+
-              ', address: '+oPeer[1].address+
-              '</div>';
+            //            UnconnectedPeers += '<div>Domain: '+
+            //              oPeer[1].domain+
+            //              ', address: '+oPeer[1].address+
+            //              '</div>';
           }
           switch (peerCounter) {
             case 1:
@@ -502,14 +508,17 @@ function divpeerinfo(node) {
           peerCounter ++;
           elementstr += str;
           if (peerCounterUnconnected > 2) {
-            const div = document.createElement('div');
-            div.innerHTML = UnconnectedPeers;
-            swal({
-              title: 'Not connected Peer(s):',
-              content: div,
-              icon: 'warning',
-              timer: 5000,
-            });
+            str += '</tr><tr class="table-danger">';
+            str += '<td>Warning, more than 2 Peers disconnected</td>';
+            str += '</tr>';
+            //            const div = document.createElement('div');
+            //            div.innerHTML = UnconnectedPeers;
+            //            swal({
+            //              title: 'Not connected Peer(s):',
+            //              content: div,
+            //              icon: 'warning',
+            //              timer: 5000,
+            //            });
           }
           // close table and container
           //          str += '</table></container>';
@@ -524,7 +533,56 @@ function divpeerinfo(node) {
   return element;
 }
 
+/**
+ * Fetch IOTA address from comnet endpoint.
+ * Show in console and div.
+ * @return {str} formatted html.
+ */
+function comnetAdres() {
+// /////////////////////////////
+// Create an address from a new seed
+// ///
+// First: run this code in a unix based terminal to generate an 81 Tryte seed.
+// 'cat /dev/urandom |LC_ALL=C tr -dc 'A-Z9' | fold -w 81 | head -n 1'
+// Paste the output of the above code into the 'seed' section below.
+// /////////////////////////////
 
+  const iota = connectnode('comnet');
+  const element = document.createElement('container');
+  element.classList.add('nodeinfo');
+  element.id = 'comnet_tokens_XeeVee';
+  const firstaddress =
+  'HCUIZQALXEGDUENRCQDHKEBVBKGDS9NAMCTALLMVRZRGPG'+
+  'ZO9BUUKNUQEJTVYGASBSRMHML9OWKGB9MIW'+'QVBSXV9NX';
+  let saldo = 0;
+  // iota
+  //  .getNewAddress(seed, { index: 0, total: 1 })
+  //  .then(address => {
+  //    console.log('Your address is: ' + address)
+  //    console.log('Paste this address into https://faucet.comnet.einfachiota.de/')
+  //  })
+  //  .catch(err => {
+  //    console.log(err)
+  //  })
+
+  iota
+      .getBalances([firstaddress], 100)
+      .then(({balances}) => {
+        console.log(balances);
+        console.log(balances[0]);
+        saldo += balances[0];
+        console.log(saldo);
+        element.innerHTML = '<div>Comnet tokens on address '+
+      firstaddress + ': ' + saldo + '</div>';
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  return element;
+}
+
+// comnetAdres();
+document.body.appendChild(comnetAdres());
 document.body.appendChild(divnodeinfoHline('iota'));
 document.body.appendChild(divpeerinfo('iota'));
 document.body.appendChild(divnodeinfoHline('iota2'));
@@ -546,6 +604,7 @@ document.body.appendChild(divpeerinfo('comnet'));
 setInterval(function() {
 //  const nodediv1 = document.getElementById('nodeinfo_iota');
 //  const nodediv2 = document.getElementById('nodeinfo_iota2');
+  const nodedivh0 = document.getElementById('comnet_tokens_XeeVee');
   const nodedivh1 = document.getElementById('nodeinfo_h_iota');
   const nodedivh2 = document.getElementById('nodeinfo_h_iota2');
   const nodedivh3 = document.getElementById('nodeinfo_h_hornet');
@@ -556,6 +615,7 @@ setInterval(function() {
   const peerdiv2 = document.getElementById('peerinfo_iota2');
   const peerdiv3 = document.getElementById('peerinfo_hornet');
   const peerdiv4 = document.getElementById('peerinfo_comnet');
+  document.body.replaceChild(comnetAdres(), nodedivh0);
   document.body.replaceChild(divnodeinfoHline('iota'), nodedivh1);
   document.body.replaceChild(divpeerinfo('iota'), peerdiv1);
   document.body.replaceChild(divnodeinfoHline('iota2'), nodedivh2);
