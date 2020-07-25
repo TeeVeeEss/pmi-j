@@ -533,56 +533,58 @@ function divpeerinfo(node) {
   return element;
 }
 
-/**
- * Fetch IOTA address from comnet endpoint.
- * Show in console and div.
- * @return {str} formatted html.
- */
-function comnetAdres() {
-// /////////////////////////////
-// Create an address from a new seed
-// ///
-// First: run this code in a unix based terminal to generate an 81 Tryte seed.
-// 'cat /dev/urandom |LC_ALL=C tr -dc 'A-Z9' | fold -w 81 | head -n 1'
-// Paste the output of the above code into the 'seed' section below.
-// /////////////////////////////
-
-  const iota = connectnode('comnet');
-  const element = document.createElement('container');
-  element.classList.add('nodeinfo');
-  element.id = 'comnet_tokens_XeeVee';
-  const firstaddress =
-  'HCUIZQALXEGDUENRCQDHKEBVBKGDS9NAMCTALLMVRZRGPG'+
-  'ZO9BUUKNUQEJTVYGASBSRMHML9OWKGB9MIW'+'QVBSXV9NX';
-  let saldo = 0;
-  // iota
-  //  .getNewAddress(seed, { index: 0, total: 1 })
-  //  .then(address => {
-  //    console.log('Your address is: ' + address)
-  //    console.log('Paste this address into https://faucet.comnet.einfachiota.de/')
-  //  })
-  //  .catch(err => {
-  //    console.log(err)
-  //  })
-
-  iota
-      .getBalances([firstaddress], 100)
-      .then(({balances}) => {
-        console.log(balances);
-        console.log(balances[0]);
-        saldo += balances[0];
-        console.log(saldo);
-        element.innerHTML = '<div>Comnet tokens on address '+
-      firstaddress + ': ' + saldo + '</div>';
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  return element;
-}
+// /**
+// * Fetch IOTA address from comnet endpoint.
+// * Show in console and div.
+// * @return {str} formatted html.
+// */
+// function comnetAdres() {
+// // /////////////////////////////
+// // Create an address from a new seed
+// // ///
+// // First: run this code in a unix based terminal
+// //        to generate an 81 Tryte seed.
+// // 'cat /dev/urandom |LC_ALL=C tr -dc 'A-Z9' | fold -w 81 | head -n 1'
+// // Paste the output of the above code into the 'seed' section below.
+// // /////////////////////////////
+//
+//  const iota = connectnode('comnet');
+//  const element = document.createElement('container');
+//  element.classList.add('nodeinfo');
+//  element.id = 'comnet_tokens_XeeVee';
+//  const firstaddress =
+//  'HCUIZQALXEGDUENRCQDHKEBVBKGDS9NAMCTALLMVRZRGPG'+
+//  'ZO9BUUKNUQEJTVYGASBSRMHML9OWKGB9MIW'+'QVBSXV9NX';
+//  let saldo = 0;
+//  // iota
+//  //  .getNewAddress(seed, { index: 0, total: 1 })
+//  //  .then(address => {
+//  //    console.log('Your address is: ' + address)
+//  //    console.log('Paste this address into '+
+//        https://faucet.comnet.einfachiota.de/')
+//  //  })
+//  //  .catch(err => {
+//  //    console.log(err)
+//  //  })
+//
+//  iota
+//      .getBalances([firstaddress], 100)
+//      .then(({balances}) => {
+//        console.log(balances);
+//        console.log(balances[0]);
+//        saldo += balances[0];
+//        console.log(saldo);
+//        element.innerHTML = '<div>Comnet tokens on address '+
+//      firstaddress + ': ' + saldo + '</div>';
+//      })
+//      .catch((err) => {
+//        console.error(err);
+//      });
+//  return element;
+// }
 
 // comnetAdres();
-document.body.appendChild(comnetAdres());
+// document.body.appendChild(comnetAdres());
 document.body.appendChild(divnodeinfoHline('iota'));
 document.body.appendChild(divpeerinfo('iota'));
 document.body.appendChild(divnodeinfoHline('iota2'));
@@ -604,7 +606,7 @@ document.body.appendChild(divpeerinfo('comnet'));
 setInterval(function() {
 //  const nodediv1 = document.getElementById('nodeinfo_iota');
 //  const nodediv2 = document.getElementById('nodeinfo_iota2');
-  const nodedivh0 = document.getElementById('comnet_tokens_XeeVee');
+//  const nodedivh0 = document.getElementById('comnet_tokens_XeeVee');
   const nodedivh1 = document.getElementById('nodeinfo_h_iota');
   const nodedivh2 = document.getElementById('nodeinfo_h_iota2');
   const nodedivh3 = document.getElementById('nodeinfo_h_hornet');
@@ -615,7 +617,7 @@ setInterval(function() {
   const peerdiv2 = document.getElementById('peerinfo_iota2');
   const peerdiv3 = document.getElementById('peerinfo_hornet');
   const peerdiv4 = document.getElementById('peerinfo_comnet');
-  document.body.replaceChild(comnetAdres(), nodedivh0);
+  //  document.body.replaceChild(comnetAdres(), nodedivh0);
   document.body.replaceChild(divnodeinfoHline('iota'), nodedivh1);
   document.body.replaceChild(divpeerinfo('iota'), peerdiv1);
   document.body.replaceChild(divnodeinfoHline('iota2'), nodedivh2);
