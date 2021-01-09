@@ -1,6 +1,6 @@
 # if you're doing anything beyond your local machine, please pin this to a specific version at https://hub.docker.com/_/node/
 # FROM node:8-alpine also works here for a smaller image
-FROM node:alpine
+FROM node:14-alpine
 
 # set our node environment, either development or production
 # defaults to production, compose overrides this to development on build and run
@@ -16,7 +16,10 @@ ENV NODE_ENV $NODE_ENV
 
 # you'll likely want the latest npm, regardless of node version, for speed and fixes
 # but pin this version for the best stability
-RUN npm i npm@latest -g
+#RUN npm i npm@latest -g
+RUN apk add --no-cache --virtual .gyp python make g++ \
+    && npm install npm@latest -g
+# && apk del .gyp
 
 # install pm2 for DEV-version
 #RUN npm i pm2@latest -g
@@ -35,15 +38,15 @@ WORKDIR /opt/node_app
 # https://github.com/nodejs/docker-node/blob/master/docs/BestPractices.md#non-root-user
 USER node
 #COPY package.json and snyk
-COPY package.json ./
+COPY docker-package.json ./package.json
 COPY .snyk ./
 
 # Install DEV-packages
 #RUN npm install webpack webpack-dev-server webpack-cli style-loader file-loader csv-loader html-webpack-plugin clean-webpack-plugin eslint eslint-loader --save-dev
 
 # Run normal install
-#RUN npm install --no-optional && npm cache clean --force
-RUN npm install && npm cache clean --force
+RUN npm install --no-optional && npm cache clean --force && npm ls
+#RUN npm install && npm cache clean --force && npm ls
 ENV PATH /opt/node_app/node_modules/.bin:$PATH
 
 # check every 30s to ensure this service returns HTTP 200
@@ -54,7 +57,7 @@ WORKDIR /opt/node_app
 # COPY . .
 
 # Copy webpack config files
-COPY webpack.config.js .eslintrc.js ./
+COPY webpack.config.cjs .eslintrc.cjs ./
 
 # Copy env files
 COPY .env pmij.env pmij.env.defaults ./
