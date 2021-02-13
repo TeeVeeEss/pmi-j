@@ -76,9 +76,9 @@ COPY .env pmij.env pmij.env.defaults ./
 #COPY docker-entrypoint.sh /usr/local/bin/
 #ENTRYPOINT ["docker-entrypoint.sh"]
 # DEV-version pm2 (docker-version), production probably node
-ENTRYPOINT ["npm"]
+#ENTRYPOINT ["npm"]
 # PROD_entrypoint
-#ENTRYPOINT ["node"]
+ENTRYPOINT ["node"]
 
 
 # if you want to use npm start instead, then use `docker run --init in production`
@@ -89,5 +89,6 @@ ENTRYPOINT ["npm"]
 #CMD ["index.js", "-i", "http://192.168.178.12:14265", "-p", "192.168.178.22:9999"]
 # DEV-version:
 CMD ["run", "run-dev"]
+CMD ["--trace-deprecation", "node_modules/webpack/bin/webpack.js", "serve", "--config", "webpack.config.cjs"]
 # PROD-version:
 #CMD ["index.js"]

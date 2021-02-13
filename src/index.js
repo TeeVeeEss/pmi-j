@@ -22,9 +22,6 @@ import {composeAPI} from '@iota/core';
  */
 function camelCaseToTitleCase(inCamelCaseString) {
   const result = inCamelCaseString
-  // "ToGetYourGEDInTimeASongAboutThe26ABCsIsOfTheEssenceButAPersonalIDCardFor
-  // User456InRoom26AContainingABC26TimesIsNotAsEasyAs123ForC3POOrR2D2Or2R2D"
-      .replace(/([a-z])([A-Z][a-z])/g, '$1 $2')
   // "To Get YourGEDIn TimeASong About The26ABCs IsOf The Essence
   // ButAPersonalIDCard For User456In Room26AContainingABC26Times IsNot AsEasy
   // As123ForC3POOrR2D2Or2R2D"
@@ -66,6 +63,10 @@ function camelCaseToTitleCase(inCamelCaseString) {
   // "To Get Your GED In Time A Song About The 26 ABCs Is Of The Essence
   // But A Personal ID Card For User 456 In Room 26A Containing ABC 26
   // Times Is Not As Easy As 123 For C3PO Or R2D2 Or 2R2D"
+
+  // "public_key" to "public key"
+      .replace(/_/g, ' ')
+  // Remove unneeded spaces
       .trim();
 
   // capitalize the first letter
@@ -105,7 +106,8 @@ function createprovider(provider) {
   // for dev the endpoint is defined as proxy in webpack-dev-server
   // for prod it's in env-variables in pmij.env
   let providerstr = '';
-  if (process.env.NODE_ENV == 'production') {
+  //  if (process.env.NODE_ENV == 'production') {
+  if (process.env.NODE_ENV == 'development') {
     if (provider == 'iota') {
       providerstr += 'http://' +
         process.env.IRI_NODE_IP + ':' +
@@ -162,126 +164,133 @@ function createprovider(provider) {
 function iterate(data, type, strn, headern, detailn) {
   const headers = headern;
   const details = detailn;
+  const typeofdata = typeof data;
   let str = strn;
   let start = '';
   let end = '';
-  for (const prop in data) {
-    if ({}.hasOwnProperty.call(data, prop)) {
-      const value = data[prop];
-      if (typeof value === 'object') {
-        console.log(prop +
-          ': found as object, recursive looking for nested ' +
-          type + 's. Keys: ' +
-          Object.keys(value).length + ', Values:');
-        // alert("Object " + index);
-        console.table(value);
-        if (type === 'header') {
-          // Call all details, the Object forces a new row
-          str += '</tr><tr>';
-          str += iterate(details, 'detail', '', [], []);
-          str += '</tr><tr>';
-          str += '<th colspan=';
-          if (Array.isArray(value)) {
-            str += Object.keys(value[0]).length;
-          } else {
-            str += Object.keys(value).length;
-          }
-          str += '>' + prop + ' (' +
-            Object.keys(value).length +
-            ')</th>' +
-            '</tr><tr>';
-          // headers.push(prop);
-          // if (type === 'detail') {
-          //   str += '<td>' + prop + '</td>';
-          //   details.push(value[0]);
-          // }
-          //          if (Array.isArray(value)) {
-          //            // Only keys of first row needed as headers
-          //            str += iterate(value[0], 'header', '', [], []);
-          //            // For each row of the Array print values
-          //            for (let i = 0; i < value.length; i++) {
-          //              for (let j = 0; j < Object.keys(value).length; j++) {
-          //                str += '<td>' +
-          //                  Object.keys(value[i]).j +
-          //                  '</td>';
-          //              }
-          //            }
-          //          } else {
-          str += iterate(value, 'header', '', [], []);
-          //          }
-          str += '</tr><tr>';
-          str += iterate(value, 'detail', '', [], []);
-          str += '</tr><tr>';
-          // Clear headers and details as they are placed
-          for (let i = details.length; i > 0; i--) {
-            headers.pop();
-            details.pop();
-          }
+  switch (typeofdata) {
+    case 'object':
+      for (const entry of data) {
+        if (entry[1] == null) {
+          entry[1] = '(null)';
         }
-        continue;
-        //            }
-        //          }
-        //        }
-        //        str += headers[headers.length-1];
+        const typeofvalue = typeof entry[1];
+        switch (typeofvalue) {
+          case 'object':
+            // Print all founded headers and details
+            if (headers.length > 0) {
+              str += '</tr><tr>';
+              start = '<th>';
+              end = '</th>';
+              for (let i = 0; i < headers.length; i++) {
+                str += start +
+                  camelCaseToTitleCase(headers[i]) +
+                  end;
+              }
+              str += '</tr><tr>';
+              start = '<td>';
+              end = '</td>';
+              for (let i = 0; i < headers.length; i++) {
+                str += start;
+                if (headers[i].match(/time/) == null) {
+                  str += details[i];
+                } else {
+                  str += Date(details[i]).toLocaleString();
+                }
+                str += end;
+              }
+              str += '</tr><tr>';
+              // Clear headers and details as they are placed
+              headers.length = 0;
+              details.length = 0;
+            }
+            if (Array.isArray(entry[1])) {
+              // Array found, loop all rows
+              for (let a = 0; a < entry[1].length; a++) {
+                if (typeof entry[1][a] == 'object') {
+                  // Nested Object, iterate it
+                  str += '</tr><tr><th' + ' colspan=' +
+                    Object.keys(entry[1][a]).length +
+                    // map.size +
+                    '>' + camelCaseToTitleCase(entry[0]) +
+                    ' (' + (a+1) + ' of ' +
+                    entry[1].length + ')' +
+                    //  ' (' + Object.keys(entry[1][a]).length + ')' +
+                    // ' (' + map.size + ')' +
+                    '</th></tr><tr>';
+                  const nestedarraymap = new Map(Object.entries(entry[1][a]));
+                  str += iterate(nestedarraymap, 'header', '', [], []);
+                } else {
+                  // Simple row, collect all values in one cell
+                  headers.push(entry[0] +
+                    // ' (' + (a+1) + ' of ' +
+                    ' (' + entry[1].length + ')');
+                  // details.push(entry[1][a]);
+                  details.push(entry[1].toString());
+                  break;
+                }
+              }
+            } else {
+              // Nested Object, iterate it
+              str += '</tr><tr><th' + ' colspan=' +
+                Object.keys(entry[1]).length +
+                // map.size +
+                '>' + camelCaseToTitleCase(entry[0]) +
+                ' (' + Object.keys(entry[1]).length + ')' +
+                // ' (' + map.size + ')' +
+                '</th></tr><tr>';
+              const nestedmap = new Map(Object.entries(entry[1]));
+              str += iterate(nestedmap, 'header', '', [], []);
+            }
+            break;
+          default:
+            // Single key + value!
+            headers.push(entry[0]);
+            details.push(entry[1]);
+            // str += '<td>' +
+            //   // entry[0].toString() +
+            //   entry[0] +
+            //   '</td>';
+            // str += '<td>' +
+            //   // entry[1].toString() +
+            //   entry[1] +
+            //   '</td></tr><tr>';
+            break;
+        }
       }
-      //      } else {
-      headers.push(prop);
-      details.push(value);
-      switch (type) {
-        //          case 'nested':
-        //            start = '<div>';
-        //            end = '</div>';
-        //            headers.push(prop);
-        //            details.push(value);
-        //            str += start +
-        //            //           camelCaseToTitleCase(index) +
-        //             headers[headers.length-1] +
-        //             ': ' +
-        //             details[details.length-1] +
-        //             end;
-        //            break;
-        case 'header':
-          //            if (Array.isArray(prop)) {
-          // only first row needed for headers
-          //              for (let i = 0; i < prop.length; i++) {
-          //                headers.push(prop[i]);
-          //              headers.push(prop[0]);
-          //                str += '<div>' + value[i] + '</div>';
-          //              str += '<div>' + value[0] + '</div>';
-          //              }
-          //            } else {
-          //              headers.push(prop);
-          start = '<th>';
-          end = '</th>';
-          str += start +
-          //             camelCaseToTitleCase(index) +
-               headers[headers.length-1] +
-          //     prop +
-              end;
-          //            }
-          break;
-        case 'detail':
-          start = '<td>';
-          end = '</td>';
-          str += start;
-          if (headers[headers.length-1].match(/time/) == null) {
-            str += details[details.length-1];
-          } else {
-            str += Date(details[details.length-1]).toLocaleString();
-          }
-          //   value +
-          str += end;
-      }
+      break;
+    case 'number':
+    case 'string':
+    default:
+      // Single Key + Value
+      headers.push(entry[0]);
+      details.push(entry[1]);
+      break;
+  }
+  start = '<th>';
+  end = '</th>';
+  for (let i = 0; i < headers.length; i++) {
+    str += start +
+      // camelCaseToTitleCase(headers[headers.length-1]) +
+      camelCaseToTitleCase(headers[i]) +
+      end;
+  }
+  str += '</tr><tr>';
+  start = '<td>';
+  end = '</td>';
+  for (let i = 0; i < headers.length; i++) {
+    str += start;
+    if (headers[i].match(/time/) == null) {
+      str += details[i];
+    } else {
+      str += Date(details[i]).toLocaleString();
     }
+    str += end;
   }
-  //  }
-  //   console.log("value   :   " + value);
   // Clear headers and details as they are placed
-  for (let i = details.length; i > 0; i--) {
-    headers.pop();
-    details.pop();
-  }
-  console.log('str: ' + str);
+  headers.length = 0;
+  details.length = 0;
+  // console.log('str: ' + str);
   return str;
 }
 
@@ -325,10 +334,11 @@ function connectcpt2(provider, type) {
       // let promise = fetch(providerstr);
       const response = await fetch(providerstr);
       if (response.ok) {
-        const json = await response.json();
+        // const json = await response.json();
+        const jsonmap = new Map(Object.entries(await response.json()));
         //        let x;
         //        let y;
-        console.log('Fetched: ' + json);
+        console.log('Fetched: ' + jsonmap);
         //        for (x in json) {
         //          if ({}.hasOwnProperty.call(json, x)) {
         //            elementstr += '<th>'+
@@ -337,7 +347,8 @@ function connectcpt2(provider, type) {
         //        }
         //        elementstr += '<td>'+json.identityID+'</td>';
         //        elementstr += '<td>'+json.publicKey+'</td>';
-        elementstr += iterate(json, 'header', '', [], []);
+        // elementstr += '<pre>' + JSON.stringify(json) + '</pre>';
+        elementstr += iterate(jsonmap, 'header', '', [], []);
         //        for (y in json) {
         //          if ({}.hasOwnProperty.call(json, y)) {
         //            elementstr += '<td>'+
@@ -446,10 +457,11 @@ function connectgoshimmer(provider, type) {
       // let promise = fetch(providerstr);
       const response = await fetch(providerstr);
       if (response.ok) {
-        const json = await response.json();
+        // const json = await response.json();
+        const jsonmap = new Map(Object.entries(await response.json()));
         //        let x;
         //        let y;
-        console.log('Fetched: ' + json);
+        console.log('Fetched: ' + jsonmap);
         //        for (x in json) {
         //          if ({}.hasOwnProperty.call(json, x)) {
         //            elementstr += '<th>'+
@@ -458,7 +470,7 @@ function connectgoshimmer(provider, type) {
         //        }
         //        elementstr += '<td>'+json.identityID+'</td>';
         //        elementstr += '<td>'+json.publicKey+'</td>';
-        elementstr += iterate(json, 'header', '', [], []);
+        elementstr += iterate(jsonmap, 'header', '', [], []);
         //        for (y in json) {
         //          if ({}.hasOwnProperty.call(json, y)) {
         //            elementstr += '<td>'+
@@ -1103,20 +1115,20 @@ function divpeerinfo(node) {
 //    '/info'));
 // document.body.appendChild(connectgoshimmer('goshimmer2',
 //    '/autopeering/neighbors'));
+document.body.appendChild(connectcpt2('cpt2',
+    'info'));
 document.body.appendChild(divnodeinfoHline('iota'));
-document.body.appendChild(divpeerinfo('iota'));
 // document.body.appendChild(divnodeinfoHline('iota2'));
 // document.body.appendChild(divpeerinfo('iota2'));
 document.body.appendChild(divnodeinfoHline('hornet'));
+document.body.appendChild(connectgoshimmer('goshimmer',
+    '/info'));
+document.body.appendChild(divpeerinfo('iota'));
 document.body.appendChild(divpeerinfo('hornet'));
 // document.body.appendChild(divnodeinfoHline('comnet'));
 // document.body.appendChild(divpeerinfo('comnet'));
 document.body.appendChild(connectgoshimmer('goshimmer',
-    '/info'));
-document.body.appendChild(connectgoshimmer('goshimmer',
     '/autopeering/neighbors'));
-document.body.appendChild(connectcpt2('cpt2',
-    'info'));
 document.body.appendChild(connectcpt2('cpt2',
     'peers'));
 // document.body.appendChild(divnodeinfo('iota'));
@@ -1127,12 +1139,12 @@ document.body.appendChild(connectcpt2('cpt2',
 // document.body.removeChild(nodediv2);
 // document.body.appendChild(divnodeinfo());
 // document.body.appendChild(divnodeinfo2());
-
 // Rebuild page every 15 seconds
 setInterval(function() {
 //  const nodediv1 = document.getElementById('nodeinfo_iota');
 //  const nodediv2 = document.getElementById('nodeinfo_iota2');
 //  const nodedivh0 = document.getElementById('comnet_tokens_XeeVee');
+  const nodedivh6 = document.getElementById('nodeinfo_h_cpt2');
   const nodedivh5 = document.getElementById('nodeinfo_h_goshimmer');
   //  const nodedivh6 = document.getElementById('nodeinfo_h_goshimmer2');
   const nodedivh1 = document.getElementById('nodeinfo_h_iota');
@@ -1147,32 +1159,48 @@ setInterval(function() {
   //  const peerdiv2 = document.getElementById('peerinfo_iota2');
   const peerdiv3 = document.getElementById('peerinfo_hornet');
   // const peerdiv4 = document.getElementById('peerinfo_comnet');
-  const nodedivh6 = document.getElementById('nodeinfo_h_cpt2');
   const peerdiv6 = document.getElementById('peerinfo_cpt2');
   // document.body.replaceChild(comnetAdres(), nodedivh0);
   //  document.body.replaceChild(connectgoshimmer('goshimmer2',
   //      '/info'), nodedivh6);
   //  document.body.replaceChild(connectgoshimmer('goshimmer2',
   //      '/autopeering/neighbors'), peerdiv6);
+  document.body.replaceChild(connectcpt2('cpt2',
+      'info'), nodedivh6);
   document.body.replaceChild(divnodeinfoHline('iota'), nodedivh1);
-  document.body.replaceChild(divpeerinfo('iota'), peerdiv1);
+  document.body.replaceChild(divnodeinfoHline('hornet'), nodedivh3);
+  document.body.replaceChild(connectgoshimmer('goshimmer',
+      '/info'), nodedivh5);
   //  document.body.replaceChild(divnodeinfoHline('iota2'), nodedivh2);
   //  document.body.replaceChild(divpeerinfo('iota2'), peerdiv2);
-  document.body.replaceChild(divnodeinfoHline('hornet'), nodedivh3);
+  document.body.replaceChild(divpeerinfo('iota'), peerdiv1);
   document.body.replaceChild(divpeerinfo('hornet'), peerdiv3);
   // document.body.replaceChild(divnodeinfoHline('comnet'), nodedivh4);
   // document.body.replaceChild(divpeerinfo('comnet'), peerdiv4);
   document.body.replaceChild(connectgoshimmer('goshimmer',
-      '/info'), nodedivh5);
-  document.body.replaceChild(connectgoshimmer('goshimmer',
       '/autopeering/neighbors'), peerdiv5);
   document.body.replaceChild(connectcpt2('cpt2',
-      'info'), nodedivh6);
-  document.body.replaceChild(connectcpt2('cpt2',
       'peers'), peerdiv6);
-//  document.body.replaceChild(divnodeinfo('iota'), nodediv1);
-//  document.body.replaceChild(divnodeinfo('iota2'), nodediv2);
+  //  document.body.replaceChild(divnodeinfo('iota'), nodediv1);
+  //  document.body.replaceChild(divnodeinfo('iota2'), nodediv2);
   //  document.body.replaceChild(divnodeinfo(), olddiv2);
   //  document.body.replaceChild(divnodeinfo2(), olddiv3);
+  // Catch errors since some browsers throw when using the new `type` option.
+  // https://bugs.webkit.org/show_bug.cgi?id=209216
+//  try {
+//    // Create the performance observer.
+//    const po = new PerformanceObserver((list) => {
+//      for (const entry of list.getEntries()) {
+//        // Logs all server timing data for this response
+//        console.log('Server Timing', entry.serverTiming);
+//      }
+//    });
+//    // Start listening for `navigation` entries to be dispatched.
+//    // po.observe({type: 'navigation', buffered: true});
+//    // po.observe({type: 'resource', buffered: true});
+//    po.observe({type: 'longtask', buffered: true});
+//  } catch (e) {
+//    // Do nothing if the browser doesn't support this API.
+//  }
 }, 15000,
 );
