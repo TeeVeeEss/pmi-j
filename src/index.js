@@ -357,7 +357,7 @@ function connectcpt2(provider, type) {
         //        }
         //        elementstr += iterate(json, 'detail', '', [], []);
         elementstr += '</tr>';
-        elementstr += '<p>--- Màrria ----</p></table>';
+        elementstr += '<p>--- Màrrria ----</p></table>';
         //      elementstr += '</table>';
         element.innerHTML = elementstr;
         return element;
@@ -411,76 +411,16 @@ function connectgoshimmer(provider, type) {
   elementstr += '</tr><tr>';
   //  elementstr += '<tr class="text-break">';
 
-  /* XMLHttpRequest method
-  const xmlhttp = new XMLHttpRequest();
-  //  xmlhttp.addEventListener("progress", updateProgress);
-  xmlhttp.onreadystatechange = function() {
-    console.log(this.readyState);
-    console.log(this.status);
-    if (this.readyState == 4) {
-      const myObj = JSON.parse(this.responseText); let x; let y;
-      for (x in myObj) {
-        if ({}.hasOwnProperty.call(myObj, x)) {
-          elementstr += '<th>'+
-            camelCaseToTitleCase(x)+'</th>';
-        }
-      }
-      //      elementstr += '</tr><tr class="text-break">';
-      elementstr += '</tr><tr>';
-      elementstr += '<td>'+provider+'</td>';
-      elementstr += '<td>'+myObj.nodeAlias+'</td>';
-      elementstr += '<td>'+myObj.toLocaleString+'</td>';
-      elementstr += '<td>'+providerstr+'</td>';
-      //      elementstr += '<td class="text-break iota_address">';
-      for (y in myObj) {
-        if ({}.hasOwnProperty.call(myObj, y)) {
-          elementstr += '<td>'+
-            myObj[y]+'</td>';
-        }
-      }
-      elementstr += '</tr>';
-      elementstr += '<p>--- Màrria ----</p></table>';
-      //      elementstr += '</table>';
-      element.innerHTML = elementstr;
-      return element;
-    }
-  };
-  xmlhttp.open('GET', providerstr, true);
-  //  xmlhttp.timeout = 2000
-  xmlhttp.send(null);
-//  XMLHttpRequest method end
-*/
-
   /* Fetch method */
   (async () => {
     try {
-      // let promise = fetch(providerstr);
       const response = await fetch(providerstr);
       if (response.ok) {
-        // const json = await response.json();
         const jsonmap = new Map(Object.entries(await response.json()));
-        //        let x;
-        //        let y;
         console.log('Fetched: ' + jsonmap);
-        //        for (x in json) {
-        //          if ({}.hasOwnProperty.call(json, x)) {
-        //            elementstr += '<th>'+
-        //         camelCaseToTitleCase(x)+'</th>';
-        //          }
-        //        }
-        //        elementstr += '<td>'+json.identityID+'</td>';
-        //        elementstr += '<td>'+json.publicKey+'</td>';
         elementstr += iterate(jsonmap, 'header', '', [], []);
-        //        for (y in json) {
-        //          if ({}.hasOwnProperty.call(json, y)) {
-        //            elementstr += '<td>'+
-        //         json[y]+'</td>';
-        //          }
-        //        }
-        //        elementstr += iterate(json, 'detail', '', [], []);
         elementstr += '</tr>';
-        elementstr += '<p>--- Màrria ----</p></table>';
-        //      elementstr += '</table>';
+        elementstr += '<p>--- Màrrria ----</p></table>';
         element.innerHTML = elementstr;
         return element;
       } else {
@@ -490,93 +430,7 @@ function connectgoshimmer(provider, type) {
       console.log('Catched fetch error: ' + e);
     }
   })();
-
   // End fetch menthod
-
-  /* selected info node
-  let elementstr = '<table class="table-striped table-hover'+
-    ' table-bordered table-responsive" style="text-align:center">';
-  elementstr += '<tr>';
-  elementstr += '<th>Node name</th>';
-  elementstr += '<th>Node Alias</th>';
-  elementstr += '<th>Local Time</th>';
-  elementstr += '<th>Node API</th>';
-  elementstr += '<th>App name</th>';
-  elementstr += '<th>App version</th>';
-  elementstr += '<th>Db size</th>';
-  elementstr += '<th>LM</th>';
-  elementstr += '<th>LSM</th>';
-  elementstr += '<th>Snapshot</th>';
-  elementstr += '<th>Tips</th>';
-  if (info.appName == 'IRI') {
-    elementstr += '<th>Connected peers</th>';
-  }
-  if (info.appName == 'HORNET') {
-    elementstr += '<th>Known peers</th>';
-  }
-  elementstr += '<th>Sync status</th>';
-  elementstr += '<th>Features</th>';
-  elementstr += '</tr><tr>';
-  elementstr += '<td>'+node+'</td>';
-  elementstr += '<td>'+info.nodeAlias+'</td>';
-  elementstr += '<td>'+myDate.toLocaleString()+'</td>';
-  elementstr += '<td>'+providerstr+'</td>';
-  elementstr += '<td>'+info.appName+'</td>';
-  elementstr += '<td>'+info.appVersion+'</td>';
-  elementstr += '<td>'+formatBytes(info.dbSizeInBytes, 3)+'</td>';
-  elementstr += '<td>'+info.latestMilestoneIndex+'</td>';
-  elementstr += '<td>'+info.latestSolidSubtangleMilestoneIndex+'</td>';
-  elementstr += '<td>'+info.lastSnapshottedMilestoneIndex+'</td>';
-  elementstr += '<td>'+info.tips+'</td>';
-  elementstr += '<td>'+info.neighbors+'</td>';
-  switch (syncdiff) {
-    case 0:
-      if (info.neighbors == 0) {
-        // Synced, but no peers
-        elementstr += '<td class="node_warn_synced">' +
-        'Sync status unknown, no peers</td>';
-        break;
-      }
-     // Synced, 1 or more peers
-     elementstr += '<td class="node_synced">' +
-     'Synced</td>';
-     break;
-   case 1:
-     // 1 behind!
-     elementstr += '<td class="node_warn_synced">'+
-     syncdiff +
-     ' milestone behind</td>';
-     break;
-   case 2, 3, 4, 5:
-     // a few behind!
-     elementstr += '<td class="node_warn_synced">'+
-     syncdiff +
-     ' milestones behind</td>';
-     break;
-   default:
-     // Unsynced!
-     elementstr += '<td class="node_unsynced">'+
-     'Unsynced, ' + syncdiff +
-     ' milestones behind !!</b></div>';
-//      const div = document.createElement('div');
-//      div.innerHTML = 'The node ' + providerstr +
-//      'is ' + syncdiff +
-//      ' milestones behind !!';
-//      swal({
-//        title: 'Unsynced',
-//        content: div,
-//        icon: 'warning',
-//        timer: 5000,
-//      });
-    }
-    elementstr += '<td class="text-break">'+
-      camelCaseToTitleCase(info.features.toString())+'</td>';
-    elementstr += '<p>--- Màrria ----</p></table>';
-*/
-  // Full getNodeInfo
-  //  const aNodeInfo = Object.entries(myObj);
-  // console.log(`elementstr: ${elementstr}`);
-  // End full getNodeInfo
   return element;
 };
 
@@ -695,7 +549,7 @@ function divnodeinfoHline(node) {
         }
         elementstr += '<td class="text-break">'+
           camelCaseToTitleCase(info.features.toString())+'</td>';
-        elementstr += '<p>--- Màrria ----</p></table>';
+        elementstr += '<p>--- Màrrria ----</p></table>';
         /* Full getNodeInfo
                 const aNodeInfo = Object.entries(info);
                 elementstr += '<table class="table-striped table-hover'+
@@ -726,16 +580,10 @@ function divnodeinfoHline(node) {
     iota
         .getBalances([mainnetadr])
         .then(({balances}) => {
-        //        console.log(balances);
-        //        console.log(balances[0]);
           saldo += balances[0];
-          // saldo2 += balances[1];
-          //        console.log(saldo);
-          // element.innerHTML =
           elementstr +=
           '<div>Mainnet tokens on address from 1 seed</div>'+
           '<div>' + mainnetadr + ': ' + formatIotas(saldo) + '</div>';
-          // '<div>' + secondaddress + ': ' + saldo2 + '</div>';
           element.innerHTML = elementstr;
         })
         .catch((err) => {
@@ -746,153 +594,9 @@ function divnodeinfoHline(node) {
           element.innerHTML = elementstr;
         });
   }
-  //  return element+element2;
   return element;
 }
 
-
-/*
-/**
- * Fetch node info from IRI endpoint.
- * iota.getNodeInfo to Show info of the IRI fullnode.
- * @param {str} node - node to connect
- * @return {str} formatted html.
-function divnodeinfo(node) {
-  const iota = connectnode(node);
-  const element = document.createElement('container');
-  const providerstr = createprovider(node);
-  iota.getNodeInfo()
-      .then((info) => {
-        const syncdiff = info.latestMilestoneIndex -
-          info.latestSolidSubtangleMilestoneIndex;
-        const aNodeInfo = Object.entries(info);
-        const myDate = new Date(info.time);
-        element.classList.add('nodeinfo');
-        element.id = 'nodeinfo_' + node;
-        let elementstr = '<table class="table-striped table-hover'+
-          ' table-bordered table-responsive" style="text-align:center">';
-        elementstr += '<tr class="text-break">';
-        elementstr += '<th>Node name</th>';
-        elementstr += '<th>Local Time</th>';
-        elementstr += '<th>IRI IP</th>';
-        elementstr += '<th>Db size</th>';
-        elementstr += '<th>LM</th>';
-        elementstr += '<th>LSM</th>';
-        elementstr += '<th>Sync status</th>';
-        elementstr += '</tr><tr class="text-break">';
-        elementstr += '<td>'+node+'</td>';
-        elementstr += '<td>'+myDate.toLocaleString()+'</td>';
-        elementstr += '<td>'+providerstr+'</td>';
-        elementstr += '<td>'+formatBytes(info.dbSizeInBytes, 3)+'</td>';
-        elementstr += '<td>'+info.latestMilestoneIndex+'</td>';
-        elementstr += '<td>'+info.latestSolidSubtangleMilestoneIndex+'</td>';
-        switch (syncdiff) {
-          case 0:
-            // Synced
-            elementstr += '<td class="node_synced">' +
-            'Synced</td>';
-            break;
-          case 1:
-            // 1 behind!
-            elementstr += '<td class="node_warn_synced">'+
-            syncdiff +
-            ' milestone behind</td>';
-            break;
-          case 2,3,4,5:
-            // a few behind!
-            elementstr += '<td class="node_warn_synced">'+
-            syncdiff +
-            ' milestones behind</td>';
-            break;
-          default:
-            // Unsynced!
-            elementstr += '<td class="node_unsynced">'+
-            'Unsynced, ' + syncdiff +
-            ' milestones behind !!</b></div>';
-            const div = document.createElement('div');
-            div.innerHTML = 'The node ' + providerstr +
-            'is ' + syncdiff +
-            ' milestones behind !!';
-            swal({
-              title: 'Unsynced',
-              content: div,
-              icon: 'warning',
-            });
-        }
-        elementstr += '</table><table class="table-striped table-hover'+
-          ' table-bordered table-responsive" style="text-align:center">';
-        elementstr += '<tr class="text-break">';
-        aNodeInfo.forEach(function(add) {
-          elementstr += '<th>'+
-          camelCaseToTitleCase(add[0])+'</th>';
-        });
-        elementstr += '</tr><tr class="text-break">';
-        aNodeInfo.forEach(function(add) {
-          elementstr += '<td class="text-break iota_address">' +
-          add[1]+'</td>';
-        });
-        elementstr += '</tr>';
-        elementstr += '</table>';
-
-        let str = elementstr;
-        //str += +'<div class="nodeinfo">Nodeinfo: ';
-        //str += 'Local Time: '+myDate.toLocaleString();
-        //str += ' IRI IP: ' + providerstr;
-        //str += ' Db size: ' + formatBytes(info.dbSizeInBytes, 3);
-        //str += '</div>';
-        switch (syncdiff) {
-          case 0:
-            // Synced
-            str += '<div class="node_synced">' +
-            '<b>LM / LSM: ' + info.latestMilestoneIndex +
-            ' / ' + info.latestSolidSubtangleMilestoneIndex +
-            ': Your node is currently ' +
-            'Synced</b></div>';
-            break;
-          case 1:
-          case 2:
-          case 3:
-            // a few behind!
-            str += '<div class="node_warn_synced">'+
-            '<b>LM / LSM: ' + info.latestMilestoneIndex +
-            ' / ' + info.latestSolidSubtangleMilestoneIndex +
-            ': Your node is currently '+syncdiff+
-            ' milestone(s) behind</b></div>';
-            break;
-          default:
-            // Unsynced!
-            str += '<div class="node_unsynced">'+
-            '<b>LM / LSM: ' + info.latestMilestoneIndex +
-            ' / ' + info.latestSolidSubtangleMilestoneIndex +
-            ': !! Your node is currently ' +
-            'Unsynced and ' + syncdiff +
-            ' milestones behind !!</b></div>';
-            const div = document.createElement('div');
-            div.innerHTML = str;
-            swal({
-              title: 'Unsynced',
-              content: div,
-              icon: 'warning',
-            });
-        }
-        str += '<div class="container-fluid text-break"><div class="row">';
-        aNodeInfo.forEach(function(add) {
-          str += '<div class="col-sm-3 border"><b>'+
-          camelCaseToTitleCase(add[0])+': </b>'+
-          '<div class="iota_address">' +
-          add[1]+'</div></div>';
-        });
-        str += '</div></div>';
-        element.innerHTML = str;
-      })
-      .catch((error) => {
-        console.log(`Request error: ${error.message}`);
-      });
-
-  //  return element+element2;
-  return element;
-}
- */
 
 /**
  * Fetch peer info from IRI endpoint.
@@ -981,17 +685,7 @@ function divpeerinfo(node) {
             str += '</tr><tr class="table-danger">';
             str += '<td>Warning, more than 2 Peers disconnected</td>';
             str += '</tr>';
-            //            const div = document.createElement('div');
-            //            div.innerHTML = UnconnectedPeers;
-            //            swal({
-            //              title: 'Not connected Peer(s):',
-            //              content: div,
-            //              icon: 'warning',
-            //              timer: 5000,
-            //            });
           }
-          // close table and container
-          //          str += '</table></container>';
           str += '</table>';
         });
         elementstr += '</div>';
