@@ -29,7 +29,8 @@
   "dependencies": {
     "@iota/client": "^0.2.0",
     "@iota/core": "^1.0.0-beta.30",
-    "@iota/wallet": "0.0.6",
+    "@iota/iota.js": "^1.5.0",
+    "@iota/wallet": "^0.1.1",
     "async": "^3.2.0",
     "bunyan": "^1.8.15",
     "crypto-browserify": "^3.12.0",

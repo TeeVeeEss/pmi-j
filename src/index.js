@@ -1,4 +1,3 @@
-// import _ from 'lodash';
 import './style.css';
 // import Logo from './logo.png';
 // import Data from './data.xml';
@@ -10,8 +9,12 @@ import {composeAPI} from '@iota/core';
 // import swal from 'sweetalert';
 // import yargs from 'yargs';
 
-// console.log('This is index JS....!');
-// Lodash, now imported by this script
+// const { ClientBuilder } = require('@iota/client')
+import {ClientBuilder} from '@iota/client';
+const client = new ClientBuilder()
+    .node('https://api.lb-0.testnet.chrysalis2.com')
+    .build();
+client.getInfo().then(console.log).catch(console.error);
 
 /**
  * Take a single camel case string and convert it to a string of separate

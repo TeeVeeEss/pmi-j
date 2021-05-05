@@ -18,7 +18,7 @@ ENV NODE_ENV $NODE_ENV
 # but pin this version for the best stability
 #RUN npm i npm@latest -g
 #RUN apk add --no-cache --virtual .gyp python make g++ curl libc6-compat && npm install npm@latest -g && npm i -g neon-cli
-RUN apt install -y python curl git make gcc g++ openssl libssl-dev && npm install npm@latest -g && npm i -g neon-cli
+RUN apt install -y python curl git make gcc g++ openssl libssl-dev add-apt-repository && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal main" && apt update && apt install -y libclang-dev && npm install npm@latest -g && npm i -g neon-cli
 # && apk del .gyp
 
 # install pm2 for DEV-version
@@ -35,7 +35,9 @@ RUN mkdir /opt/node_app \
   && mkdir /opt/node_app/node_modules/@iota \
   && mkdir /opt/node_app/node_modules/@iota/client \
   && mkdir /opt/node_app/node_modules/iota-core \
-  && chown -R node:node /opt/node_app
+  && mkdir /usr/local/lib/node_modules/@iota \
+  && chown -R node:node /opt/node_app \
+  && chown -R node:node /usr/local/lib/node_modules/@iota
 WORKDIR /opt/node_app
 
 
@@ -59,11 +61,20 @@ COPY .snyk ./
 # Install DEV-packages
 #RUN npm install webpack webpack-dev-server webpack-cli style-loader file-loader csv-loader html-webpack-plugin clean-webpack-plugin eslint eslint-loader --save-dev
 
-# Fetch wallet.rs for nodejs-binding
-RUN git clone https://github.com/iotaledger/wallet.rs.git && npm install wallet.rs/bindings/nodejs
+# Fetch wallet.rs for nodejs-binding and prepare for using @iota/wallet
+RUN git clone https://github.com/iotaledger/wallet.rs.git
+WORKDIR /opt/node_app/wallet.rs/bindings/nodejs
+RUN npm i && npm run build:neon && npm ln
 
-# Run normal install
-RUN npm install && npm ls
+# Fetch iota.rs for nodejs-binding and prepare for using @iota/client
+WORKDIR /opt/node_app
+RUN git clone https://github.com/iotaledger/iota.rs.git
+WORKDIR /opt/node_app/iota.rs/bindings/nodejs
+RUN npm i && npm run build:neon && npm ln
+
+# Run normal install, link @iota/client first
+WORKDIR /opt/node_app
+RUN npm ln @iota/client && npm install && npm ls
 #RUN npm install --no-optional && npm cache clean --force && npm ls
 #RUN npm install && npm cache clean --force && npm ls
 
@@ -71,7 +82,7 @@ RUN npm install && npm ls
 #HEALTHCHECK --interval=30s CMD node healthcheck.js
 
 # copy in our source code last, as it changes the most
-WORKDIR /opt/node_app
+# WORKDIR /opt/node_app
 # COPY . .
 
 # Copy webpack config files
