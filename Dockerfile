@@ -18,7 +18,7 @@ ENV NODE_ENV $NODE_ENV
 # but pin this version for the best stability
 #RUN npm i npm@latest -g
 #RUN apk add --no-cache --virtual .gyp python make g++ curl libc6-compat && npm install npm@latest -g && npm i -g neon-cli
-RUN apt install -y python curl git make gcc g++ openssl libssl-dev add-apt-repository && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal main" && apt update && apt install -y libclang-dev && npm install npm@latest -g && npm i -g neon-cli
+RUN apt install -y python curl git make gcc g++ openssl libssl-dev && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && apt update && apt install -y libclang-dev && npm install npm@latest -g && npm i -g neon-cli
 # && apk del .gyp
 
 # install pm2 for DEV-version

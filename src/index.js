@@ -10,11 +10,36 @@ import {composeAPI} from '@iota/core';
 // import yargs from 'yargs';
 
 // const { ClientBuilder } = require('@iota/client')
-import {ClientBuilder} from '@iota/client';
-const client = new ClientBuilder()
-    .node('https://api.lb-0.testnet.chrysalis2.com')
-    .build();
-client.getInfo().then(console.log).catch(console.error);
+// import {ClientBuilder} from '@iota/client';
+// const client = new ClientBuilder()
+//    .node('https://api.lb-0.testnet.chrysalis2.com')
+//    .build();
+// client.getInfo().then(console.log).catch(console.error);
+
+// const {SingleNodeClient} = require('@iota/iota.js');
+import {SingleNodeClient} from '@iota/iota.js';
+
+/**
+ * Example for use of new lib iota.js
+ */
+async function run() {
+  const client = new SingleNodeClient('https://chrysalis-nodes.iota.org');
+  const info = await client.info();
+  console.log('Node Info');
+  console.log('\tName:', info.name);
+  console.log('\tVersion:', info.version);
+  console.log('\tIs Healthy:', info.isHealthy);
+  console.log('\tNetwork Id:', info.networkId);
+  console.log('\tLatest Milestone Index:', info.latestMilestoneIndex);
+  console.log('\tConfirmed Milestone Index:', info.confirmedMilestoneIndex);
+  console.log('\tPruning Index:', info.pruningIndex);
+  console.log('\tFeatures:', info.features);
+  console.log('\tMin PoW Score:', info.minPoWScore);
+}
+
+run()
+    .then(() => console.log('Done'))
+    .catch((err) => console.error(err));
 
 /**
  * Take a single camel case string and convert it to a string of separate
@@ -114,7 +139,8 @@ function createprovider(provider) {
     if (provider == 'iota') {
       providerstr += 'http://' +
         process.env.IRI_NODE_IP + ':' +
-        process.env.IRI_NODE_PORT;
+        process.env.IRI_NODE_PORT+
+        '/api/v1/';
     };
     if (provider == 'iota2') {
       providerstr += 'http://' +
@@ -310,15 +336,11 @@ function connectcpt2(provider, type) {
   // using pmij.env
   const providerstr = createprovider(provider)+type;
   const element = document.createElement('container');
-  switch (type) {
-    case 'info':
-      element.classList.add('nodeinfo');
-      element.id = 'nodeinfo_h_' + provider;
-      break;
-    case 'peers':
-      element.classList.add('peerinfo');
-      element.id = 'peerinfo_' + provider;
-  }
+  const mainbech32adr =
+    'iota1qp853z2qtu386vkzdef4a36l7wl'+
+    '8wvcln9q24h0n5g0hcccyan9pc8fqz03';
+  const balanceprovider = 'http://192.168.178.12:14267/api/v1/addresses/';
+  let saldo = 0;
   let elementstr = '<table class="table-striped table-hover'+
     ' table-bordered table-responsive" '+
     'style="text-align:center">';
@@ -331,6 +353,38 @@ function connectcpt2(provider, type) {
   elementstr += '<td>'+provider+'</td>';
   elementstr += '<td>'+providerstr+'</td>';
   elementstr += '</tr><tr>';
+  switch (type) {
+    case 'info':
+      element.classList.add('nodeinfo');
+      element.id = 'nodeinfo_h_' + provider;
+      // Fetch the balance from a Mainnet address
+      // curl http://192.168.178.12:14267/api/v1/addresses/+
+      // iota1qp853z2qtu386vkzdef4a36l7wl8wvcln9q24h0n5g0hcccyan9pc8fqz03
+      /* Fetch method Chrysalis */
+      (async () => {
+        try {
+          const response = await fetch(balanceprovider+mainbech32adr);
+          if (response.ok) {
+            const jsonmap = new Map(Object.entries(await response.json()));
+            console.log('Fetched: ' + jsonmap);
+            saldo += jsonmap.get('data').balance;
+            elementstr +=
+              '<div>Mainnet tokens on address from 1 seed: '+
+              formatIotas(saldo)+'</div>';
+            elementstr += '<div>' + iterate(jsonmap, 'header', '', [], []);
+            elementstr += '</div>';
+          } else {
+            console.log('Fetch error: ' + response.status);
+          }
+        } catch (e) {
+          console.log('Catched fetch error: ' + e);
+        }
+      })();
+      break;
+    case 'peers':
+      element.classList.add('peerinfo');
+      element.id = 'peerinfo_' + provider;
+  }
   /* Fetch method */
   (async () => {
     try {
@@ -464,8 +518,8 @@ function divnodeinfoHline(node) {
   const element = document.createElement('container');
   const providerstr = createprovider(node);
   const mainnetadr =
-    'CGPGFKBHXRHWLWLXZOSFTWOAFIOCOFPTIAFBMIVS9BTJM'+
-    'IHOSQL9RKSXXPBW9NGQCXMUP9CPGUEDMGHMCYQQ9HDD9X';
+   'CGPGFKBHXRHWLWLXZOSFTWOAFIOCOFPTIAFBMIVS9BTJM'+
+   'IHOSQL9RKSXXPBW9NGQCXMUP9CPGUEDMGHMCYQQ9HDD9X';
   let saldo = 0;
   let elementstr = '';
   iota.getNodeInfo()
@@ -578,14 +632,17 @@ function divnodeinfoHline(node) {
         console.log(`Request error: ${error.message}`);
       });
 
-  // Fetch the balance from a Mainnet address
+  // End fetch menthod
+  // '<div>' + mainnetadr + ': ' + formatIotas(saldo) + '</div>';
+  element.innerHTML = elementstr;
+  // Legacy Hornet
   if (node !== 'comnet') {
     iota
         .getBalances([mainnetadr])
         .then(({balances}) => {
           saldo += balances[0];
           elementstr +=
-          '<div>Mainnet tokens on address from 1 seed</div>'+
+          '<div>Legacy Mainnet tokens on address from 1 seed</div>'+
           '<div>' + mainnetadr + ': ' + formatIotas(saldo) + '</div>';
           element.innerHTML = elementstr;
         })
@@ -597,6 +654,7 @@ function divnodeinfoHline(node) {
           element.innerHTML = elementstr;
         });
   }
+  // End Legacy Hornet
   return element;
 }
 
@@ -812,22 +870,26 @@ function divpeerinfo(node) {
 //    '/info'));
 // document.body.appendChild(connectgoshimmer('goshimmer2',
 //    '/autopeering/neighbors'));
+document.body.appendChild(connectcpt2('iota',
+    'info'));
 document.body.appendChild(connectcpt2('cpt2',
     'info'));
-document.body.appendChild(divnodeinfoHline('iota'));
+// document.body.appendChild(divnodeinfoHline('iota'));
 // document.body.appendChild(divnodeinfoHline('iota2'));
 // document.body.appendChild(divpeerinfo('iota2'));
 document.body.appendChild(divnodeinfoHline('hornet'));
 document.body.appendChild(connectgoshimmer('goshimmer',
     '/info'));
-document.body.appendChild(divpeerinfo('iota'));
+// document.body.appendChild(divpeerinfo('iota'));
+document.body.appendChild(connectcpt2('iota',
+    'peers'));
+document.body.appendChild(connectcpt2('cpt2',
+    'peers'));
 document.body.appendChild(divpeerinfo('hornet'));
 // document.body.appendChild(divnodeinfoHline('comnet'));
 // document.body.appendChild(divpeerinfo('comnet'));
 document.body.appendChild(connectgoshimmer('goshimmer',
     '/autopeering/neighbors'));
-document.body.appendChild(connectcpt2('cpt2',
-    'peers'));
 // document.body.appendChild(divnodeinfo('iota'));
 // document.body.appendChild(divnodeinfo('iota2'));
 // const nodediv1 = document.getElementById('nodeinfo_iota');
@@ -841,43 +903,45 @@ setInterval(function() {
 //  const nodediv1 = document.getElementById('nodeinfo_iota');
 //  const nodediv2 = document.getElementById('nodeinfo_iota2');
 //  const nodedivh0 = document.getElementById('comnet_tokens_XeeVee');
+  const nodedivh1 = document.getElementById('nodeinfo_h_iota');
   const nodedivh6 = document.getElementById('nodeinfo_h_cpt2');
+  const nodedivh3 = document.getElementById('nodeinfo_h_hornet');
   const nodedivh5 = document.getElementById('nodeinfo_h_goshimmer');
   //  const nodedivh6 = document.getElementById('nodeinfo_h_goshimmer2');
-  const nodedivh1 = document.getElementById('nodeinfo_h_iota');
   //  const nodedivh2 = document.getElementById('nodeinfo_h_iota2');
-  const nodedivh3 = document.getElementById('nodeinfo_h_hornet');
   // const nodedivh4 = document.getElementById('nodeinfo_h_comnet');
   //  const olddiv2 = document.getElementById('nodeinfo');
   //  const olddiv3 = document.getElementById('nodeinfo2');
+  const peerdiv1 = document.getElementById('peerinfo_iota');
+  const peerdiv6 = document.getElementById('peerinfo_cpt2');
+  const peerdiv3 = document.getElementById('peerinfo_hornet');
   const peerdiv5 = document.getElementById('peerinfo_goshimmer');
   //  const peerdiv6 = document.getElementById('peerinfo_goshimmer2');
-  const peerdiv1 = document.getElementById('peerinfo_iota');
   //  const peerdiv2 = document.getElementById('peerinfo_iota2');
-  const peerdiv3 = document.getElementById('peerinfo_hornet');
   // const peerdiv4 = document.getElementById('peerinfo_comnet');
-  const peerdiv6 = document.getElementById('peerinfo_cpt2');
   // document.body.replaceChild(comnetAdres(), nodedivh0);
   //  document.body.replaceChild(connectgoshimmer('goshimmer2',
   //      '/info'), nodedivh6);
   //  document.body.replaceChild(connectgoshimmer('goshimmer2',
   //      '/autopeering/neighbors'), peerdiv6);
+  document.body.replaceChild(connectcpt2('iota',
+      'info'), nodedivh1);
   document.body.replaceChild(connectcpt2('cpt2',
       'info'), nodedivh6);
-  document.body.replaceChild(divnodeinfoHline('iota'), nodedivh1);
   document.body.replaceChild(divnodeinfoHline('hornet'), nodedivh3);
   document.body.replaceChild(connectgoshimmer('goshimmer',
       '/info'), nodedivh5);
   //  document.body.replaceChild(divnodeinfoHline('iota2'), nodedivh2);
   //  document.body.replaceChild(divpeerinfo('iota2'), peerdiv2);
-  document.body.replaceChild(divpeerinfo('iota'), peerdiv1);
-  document.body.replaceChild(divpeerinfo('hornet'), peerdiv3);
-  // document.body.replaceChild(divnodeinfoHline('comnet'), nodedivh4);
-  // document.body.replaceChild(divpeerinfo('comnet'), peerdiv4);
-  document.body.replaceChild(connectgoshimmer('goshimmer',
-      '/autopeering/neighbors'), peerdiv5);
+  document.body.replaceChild(connectcpt2('iota',
+      'peers'), peerdiv1);
   document.body.replaceChild(connectcpt2('cpt2',
       'peers'), peerdiv6);
+  // document.body.replaceChild(divnodeinfoHline('comnet'), nodedivh4);
+  // document.body.replaceChild(divpeerinfo('comnet'), peerdiv4);
+  document.body.replaceChild(divpeerinfo('hornet'), peerdiv3);
+  document.body.replaceChild(connectgoshimmer('goshimmer',
+      '/autopeering/neighbors'), peerdiv5);
   //  document.body.replaceChild(divnodeinfo('iota'), nodediv1);
   //  document.body.replaceChild(divnodeinfo('iota2'), nodediv2);
   //  document.body.replaceChild(divnodeinfo(), olddiv2);
