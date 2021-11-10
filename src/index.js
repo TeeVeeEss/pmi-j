@@ -1,14 +1,45 @@
-// import _ from 'lodash';
 import './style.css';
 // import Logo from './logo.png';
 // import Data from './data.xml';
 // import printMe from './print.js';
 import {composeAPI} from '@iota/core';
-import swal from 'sweetalert';
+// import React from "react";
+// import ReactDOM from 'react-dom';
+// import App from './test_recursive.js';
+// import swal from 'sweetalert';
 // import yargs from 'yargs';
 
-// console.log('This is index JS....!');
-// Lodash, now imported by this script
+// const { ClientBuilder } = require('@iota/client')
+// import {ClientBuilder} from '@iota/client';
+// const client = new ClientBuilder()
+//    .node('https://api.lb-0.testnet.chrysalis2.com')
+//    .build();
+// client.getInfo().then(console.log).catch(console.error);
+
+// const {SingleNodeClient} = require('@iota/iota.js');
+import {SingleNodeClient} from '@iota/iota.js';
+
+/**
+ * Example for use of new lib iota.js
+ */
+async function run() {
+  const client = new SingleNodeClient('https://chrysalis-nodes.iota.org');
+  const info = await client.info();
+  console.log('Node Info');
+  console.log('\tName:', info.name);
+  console.log('\tVersion:', info.version);
+  console.log('\tIs Healthy:', info.isHealthy);
+  console.log('\tNetwork Id:', info.networkId);
+  console.log('\tLatest Milestone Index:', info.latestMilestoneIndex);
+  console.log('\tConfirmed Milestone Index:', info.confirmedMilestoneIndex);
+  console.log('\tPruning Index:', info.pruningIndex);
+  console.log('\tFeatures:', info.features);
+  console.log('\tMin PoW Score:', info.minPoWScore);
+}
+
+run()
+    .then(() => console.log('Done'))
+    .catch((err) => console.error(err));
 
 /**
  * Take a single camel case string and convert it to a string of separate
@@ -19,9 +50,6 @@ import swal from 'sweetalert';
  */
 function camelCaseToTitleCase(inCamelCaseString) {
   const result = inCamelCaseString
-  // "ToGetYourGEDInTimeASongAboutThe26ABCsIsOfTheEssenceButAPersonalIDCardFor
-  // User456InRoom26AContainingABC26TimesIsNotAsEasyAs123ForC3POOrR2D2Or2R2D"
-      .replace(/([a-z])([A-Z][a-z])/g, '$1 $2')
   // "To Get YourGEDIn TimeASong About The26ABCs IsOf The Essence
   // ButAPersonalIDCard For User456In Room26AContainingABC26Times IsNot AsEasy
   // As123ForC3POOrR2D2Or2R2D"
@@ -63,33 +91,41 @@ function camelCaseToTitleCase(inCamelCaseString) {
   // "To Get Your GED In Time A Song About The 26 ABCs Is Of The Essence
   // But A Personal ID Card For User 456 In Room 26A Containing ABC 26
   // Times Is Not As Easy As 123 For C3PO Or R2D2 Or 2R2D"
+
+  // "public_key" to "public key"
+      .replace(/_/g, ' ')
+  // Remove unneeded spaces
       .trim();
 
   // capitalize the first letter
   return result.charAt(0).toUpperCase() + result.slice(1);
 }
 
+
 /**
- * Show bytes as human readable like GB
- * @param {byte} bytes The to be converted numeber of bytes.
+ * Show iotas as human readable like Gi
+ * @param {int} iotas The to be converted number of iotas.
  * @param {int} decimals Number of decimals, default 2
- * bytes is numeric
- * @return {str} is smth like 3.2 GB.
+ * iotas is numeric
+ * @return {str} is smth like 3.2 Gi.
  */
-function formatBytes(bytes, decimals = 2) {
-  if (bytes === 0) return '0 Bytes';
+function formatIotas(iotas, decimals = 2) {
+//  if (bytes === 0) return '0 iotas';
+  if (iotas === 0) return '0 iota';
 
-  const k = 1024;
+  //  const k = 1024;
+  const k = 1000;
   const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  //  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  const sizes = ['i', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi', 'Yi'];
 
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const i = Math.floor(Math.log(iotas) / Math.log(k));
 
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  return parseFloat((iotas / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
 /**
- * Create provider string to IRI endpoint.
+ * Create provider string to IOTA endpoint.
  * @param {str} provider  The to be connected node.
  * providerstr is address:port.
  * @return {provider} is string.
@@ -98,11 +134,13 @@ function createprovider(provider) {
   // for dev the endpoint is defined as proxy in webpack-dev-server
   // for prod it's in env-variables in pmij.env
   let providerstr = '';
-  if (process.env.NODE_ENV == 'production') {
+  //  if (process.env.NODE_ENV == 'production') {
+  if (process.env.NODE_ENV == 'development') {
     if (provider == 'iota') {
       providerstr += 'http://' +
         process.env.IRI_NODE_IP + ':' +
-        process.env.IRI_NODE_PORT;
+        process.env.IRI_NODE_PORT+
+        '/api/v1/';
     };
     if (provider == 'iota2') {
       providerstr += 'http://' +
@@ -119,12 +157,340 @@ function createprovider(provider) {
         process.env.IRI_NODE_IP_3 + ':' +
         process.env.IRI_NODE_PORT_3;
     };
+    if (provider == 'goshimmer') {
+      providerstr += 'http://' +
+        process.env.IRI_NODE_IP_5 + ':' +
+        process.env.IRI_NODE_PORT_5;
+    };
+    if (provider == 'goshimmer2') {
+      providerstr += '//xeevee.net:18080';
+      //        process.env.IRI_NODE_IP_5 + ':' +
+      //        process.env.IRI_NODE_PORT_5;
+    };
+    if (provider == 'cpt2') {
+      providerstr += 'http://' +
+        process.env.IRI_NODE_IP_3 + ':' +
+        process.env.IRI_NODE_PORT_3 +
+        '/api/v1/';
+    };
   } else {
     providerstr += '/api';
   }
   console.log('Probed node: ' + providerstr);
   return providerstr;
 }
+
+/**
+ * Iterate over a JSON of unknown depth.
+ * @param {str} data some info from an IOTA API.
+ * @param {str} type return header or detail.
+ * @param {str} strn already formatted json.
+ * @param {array} headern already formatted array.
+ * @param {array} detailn already formatted array.
+ * data is JSON.
+ * @return {str} str is formatted html.
+ */
+function iterate(data, type, strn, headern, detailn) {
+  const headers = headern;
+  const details = detailn;
+  const typeofdata = typeof data;
+  let str = strn;
+  let start = '';
+  let end = '';
+  switch (typeofdata) {
+    case 'object':
+      for (const entry of data) {
+        if (entry[1] == null) {
+          entry[1] = '(null)';
+        }
+        const typeofvalue = typeof entry[1];
+        switch (typeofvalue) {
+          case 'object':
+            // Print all founded headers and details
+            if (headers.length > 0) {
+              str += '</tr><tr>';
+              start = '<th>';
+              end = '</th>';
+              for (let i = 0; i < headers.length; i++) {
+                str += start +
+                  camelCaseToTitleCase(headers[i]) +
+                  end;
+              }
+              str += '</tr><tr>';
+              start = '<td>';
+              end = '</td>';
+              for (let i = 0; i < headers.length; i++) {
+                str += start;
+                if (headers[i].match(/time/) == null) {
+                  str += details[i];
+                } else {
+                  str += Date(details[i]).toLocaleString();
+                }
+                str += end;
+              }
+              str += '</tr><tr>';
+              // Clear headers and details as they are placed
+              headers.length = 0;
+              details.length = 0;
+            }
+            if (Array.isArray(entry[1])) {
+              // Array found, loop all rows
+              for (let a = 0; a < entry[1].length; a++) {
+                if (typeof entry[1][a] == 'object') {
+                  // Nested Object, iterate it
+                  str += '</tr><tr><th' + ' colspan=' +
+                    Object.keys(entry[1][a]).length +
+                    // map.size +
+                    '>' + camelCaseToTitleCase(entry[0]) +
+                    ' (' + (a+1) + ' of ' +
+                    entry[1].length + ')' +
+                    //  ' (' + Object.keys(entry[1][a]).length + ')' +
+                    // ' (' + map.size + ')' +
+                    '</th></tr><tr>';
+                  const nestedarraymap = new Map(Object.entries(entry[1][a]));
+                  str += iterate(nestedarraymap, 'header', '', [], []);
+                } else {
+                  // Simple row, collect all values in one cell
+                  headers.push(entry[0] +
+                    // ' (' + (a+1) + ' of ' +
+                    ' (' + entry[1].length + ')');
+                  // details.push(entry[1][a]);
+                  details.push(entry[1].toString());
+                  break;
+                }
+              }
+            } else {
+              // Nested Object, iterate it
+              str += '</tr><tr><th' + ' colspan=' +
+                Object.keys(entry[1]).length +
+                // map.size +
+                '>' + camelCaseToTitleCase(entry[0]) +
+                ' (' + Object.keys(entry[1]).length + ')' +
+                // ' (' + map.size + ')' +
+                '</th></tr><tr>';
+              const nestedmap = new Map(Object.entries(entry[1]));
+              str += iterate(nestedmap, 'header', '', [], []);
+            }
+            break;
+          default:
+            // Single key + value!
+            headers.push(entry[0]);
+            details.push(entry[1]);
+            // str += '<td>' +
+            //   // entry[0].toString() +
+            //   entry[0] +
+            //   '</td>';
+            // str += '<td>' +
+            //   // entry[1].toString() +
+            //   entry[1] +
+            //   '</td></tr><tr>';
+            break;
+        }
+      }
+      break;
+    case 'number':
+    case 'string':
+    default:
+      // Single Key + Value
+      headers.push(entry[0]);
+      details.push(entry[1]);
+      break;
+  }
+  start = '<th>';
+  end = '</th>';
+  for (let i = 0; i < headers.length; i++) {
+    str += start +
+      // camelCaseToTitleCase(headers[headers.length-1]) +
+      camelCaseToTitleCase(headers[i]) +
+      end;
+  }
+  str += '</tr><tr>';
+  start = '<td>';
+  end = '</td>';
+  for (let i = 0; i < headers.length; i++) {
+    str += start;
+    if (headers[i].match(/time/) == null) {
+      str += details[i];
+    } else {
+      str += Date(details[i]).toLocaleString();
+    }
+    str += end;
+  }
+  // Clear headers and details as they are placed
+  headers.length = 0;
+  details.length = 0;
+  // console.log('str: ' + str);
+  return str;
+}
+
+/**
+ * Fetch JSON from Chrysalis pt2 endpoint.
+ * @param {str} provider  The to be connected node.
+ * @param {str} type  node-info or peer-info.
+ * providerstr is address:port.
+ * @return {element} is formatted html.
+ */
+function connectcpt2(provider, type) {
+  // Chrysalis pt 2 info curl -vv http://192.168.178.100:14265/api/v1/info|jq
+  // Chrysalis pt 2 peers curl -vv http://192.168.178.100:14265/api/v1/peers|jq
+  // using pmij.env
+  const providerstr = createprovider(provider)+type;
+  const element = document.createElement('container');
+  const mainbech32adr =
+    'iota1qp853z2qtu386vkzdef4a36l7wl'+
+    '8wvcln9q24h0n5g0hcccyan9pc8fqz03';
+  const balanceprovider = 'http://192.168.178.12:14267/api/v1/addresses/';
+  let saldo = 0;
+  let elementstr = '<table class="table-striped table-hover'+
+    ' table-bordered table-responsive" '+
+    'style="text-align:center">';
+  elementstr += '<tr>';
+  elementstr += '<th>Node name</th>';
+  //  elementstr += '<th>Node ID</th>';
+  //  elementstr += '<th>Public Key</th>';
+  elementstr += '<th>Node API</th>';
+  elementstr += '</tr><tr>';
+  elementstr += '<td>'+provider+'</td>';
+  elementstr += '<td>'+providerstr+'</td>';
+  elementstr += '</tr><tr>';
+  switch (type) {
+    case 'info':
+      element.classList.add('nodeinfo');
+      element.id = 'nodeinfo_h_' + provider;
+      // Fetch the balance from a Mainnet address
+      // curl http://192.168.178.12:14267/api/v1/addresses/+
+      // iota1qp853z2qtu386vkzdef4a36l7wl8wvcln9q24h0n5g0hcccyan9pc8fqz03
+      /* Fetch method Chrysalis */
+      (async () => {
+        try {
+          const response = await fetch(balanceprovider+mainbech32adr);
+          if (response.ok) {
+            const jsonmap = new Map(Object.entries(await response.json()));
+            console.log('Fetched: ' + jsonmap);
+            saldo += jsonmap.get('data').balance;
+            elementstr +=
+              '<div>Mainnet tokens on address from 1 seed: '+
+              formatIotas(saldo)+'</div>';
+            elementstr += '<div>' + iterate(jsonmap, 'header', '', [], []);
+            elementstr += '</div>';
+          } else {
+            console.log('Fetch error: ' + response.status);
+          }
+        } catch (e) {
+          console.log('Catched fetch error: ' + e);
+        }
+      })();
+      break;
+    case 'peers':
+      element.classList.add('peerinfo');
+      element.id = 'peerinfo_' + provider;
+  }
+  /* Fetch method */
+  (async () => {
+    try {
+      // let promise = fetch(providerstr);
+      const response = await fetch(providerstr);
+      if (response.ok) {
+        // const json = await response.json();
+        const jsonmap = new Map(Object.entries(await response.json()));
+        //        let x;
+        //        let y;
+        console.log('Fetched: ' + jsonmap);
+        //        for (x in json) {
+        //          if ({}.hasOwnProperty.call(json, x)) {
+        //            elementstr += '<th>'+
+        //         camelCaseToTitleCase(x)+'</th>';
+        //          }
+        //        }
+        //        elementstr += '<td>'+json.identityID+'</td>';
+        //        elementstr += '<td>'+json.publicKey+'</td>';
+        // elementstr += '<pre>' + JSON.stringify(json) + '</pre>';
+        elementstr += iterate(jsonmap, 'header', '', [], []);
+        //        for (y in json) {
+        //          if ({}.hasOwnProperty.call(json, y)) {
+        //            elementstr += '<td>'+
+        //         json[y]+'</td>';
+        //          }
+        //        }
+        //        elementstr += iterate(json, 'detail', '', [], []);
+        elementstr += '</tr>';
+        elementstr += '<p>--- Màrrria ----</p></table>';
+        //      elementstr += '</table>';
+        element.innerHTML = elementstr;
+        return element;
+      } else {
+        console.log('Fetch error: ' + response.status);
+      }
+    } catch (e) {
+      console.log('Catched fetch error: ' + e);
+    }
+  })();
+  return element;
+};
+
+
+/**
+ * Fetch JSON from Goshimmer endpoint.
+ * @param {str} provider  The to be connected node.
+ * @param {str} type  node-info or peer-info.
+ * providerstr is address:port.
+ * @return {element} is formatted html.
+ */
+function connectgoshimmer(provider, type) {
+  // Goshimmer info curl -vv -X GET http://192.168.178.100:8080/info|jq
+  // Goshimmer peers curl -vv -X GET http://192.168.178.100:8080/autopeering/neighbors|jq
+  // Goshimmer info curl http://xeevee.net:9080/info|jq
+  // Goshimmer peers curl http://xeevee.net:9080/autopeering/neighbors|jq
+  // Connect to Goshimmer, fetch either node- or peer-info
+  // using pmij.env
+  const providerstr = createprovider(provider)+type;
+  const element = document.createElement('container');
+  switch (type) {
+    case '/info':
+      element.classList.add('nodeinfo');
+      element.id = 'nodeinfo_h_' + provider;
+      break;
+    case '/autopeering/neighbors':
+      element.classList.add('peerinfo');
+      element.id = 'peerinfo_' + provider;
+  }
+  let elementstr = '<table class="table-striped table-hover'+
+    ' table-bordered table-responsive" '+
+    'style="text-align:center">';
+  elementstr += '<tr>';
+  elementstr += '<th>Node name</th>';
+  //  elementstr += '<th>Node ID</th>';
+  //  elementstr += '<th>Public Key</th>';
+  elementstr += '<th>Node API</th>';
+  elementstr += '</tr><tr>';
+  elementstr += '<td>'+provider+'</td>';
+  elementstr += '<td>'+providerstr+'</td>';
+  elementstr += '</tr><tr>';
+  //  elementstr += '<tr class="text-break">';
+
+  /* Fetch method */
+  (async () => {
+    try {
+      const response = await fetch(providerstr);
+      if (response.ok) {
+        const jsonmap = new Map(Object.entries(await response.json()));
+        console.log('Fetched: ' + jsonmap);
+        elementstr += iterate(jsonmap, 'header', '', [], []);
+        elementstr += '</tr>';
+        elementstr += '<p>--- Màrrria ----</p></table>';
+        element.innerHTML = elementstr;
+        return element;
+      } else {
+        console.log('Fetch error: ' + response.status);
+      }
+    } catch (e) {
+      console.log('Catched fetch error: ' + e);
+    }
+  })();
+  // End fetch menthod
+  return element;
+};
+
 
 /**
  * Create API-object IRI endpoint.
@@ -151,6 +517,11 @@ function divnodeinfoHline(node) {
   const iota = connectnode(node);
   const element = document.createElement('container');
   const providerstr = createprovider(node);
+  const mainnetadr =
+   'CGPGFKBHXRHWLWLXZOSFTWOAFIOCOFPTIAFBMIVS9BTJM'+
+   'IHOSQL9RKSXXPBW9NGQCXMUP9CPGUEDMGHMCYQQ9HDD9X';
+  let saldo = 0;
+  let elementstr = '';
   iota.getNodeInfo()
       .then((info) => {
         const syncdiff = info.latestMilestoneIndex -
@@ -158,35 +529,36 @@ function divnodeinfoHline(node) {
         const myDate = new Date(info.time);
         element.classList.add('nodeinfo');
         element.id = 'nodeinfo_h_' + node;
-        let elementstr = '<table class="table-striped table-hover'+
+        elementstr += '<table class="table-striped table-hover'+
           ' table-bordered table-responsive" style="text-align:center">';
         elementstr += '<tr>';
         elementstr += '<th>Node name</th>';
+        elementstr += '<th>Node Alias</th>';
         elementstr += '<th>Local Time</th>';
         elementstr += '<th>Node API</th>';
         elementstr += '<th>App name</th>';
         elementstr += '<th>App version</th>';
-        elementstr += '<th>Db size</th>';
-        elementstr += '<th>Java Total RAM</th>';
-        elementstr += '<th>Java Free RAM</th>';
-        elementstr += '<th>Java Max RAM</th>';
+        // elementstr += '<th>Db size</th>';
         elementstr += '<th>LM</th>';
         elementstr += '<th>LSM</th>';
         elementstr += '<th>Snapshot</th>';
         elementstr += '<th>Tips</th>';
-        elementstr += '<th>Connected peers</th>';
+        if (info.appName == 'IRI') {
+          elementstr += '<th>Connected peers</th>';
+        }
+        if (info.appName == 'HORNET') {
+          elementstr += '<th>Known peers</th>';
+        }
         elementstr += '<th>Sync status</th>';
         elementstr += '<th>Features</th>';
         elementstr += '</tr><tr>';
         elementstr += '<td>'+node+'</td>';
+        elementstr += '<td>'+info.nodeAlias+'</td>';
         elementstr += '<td>'+myDate.toLocaleString()+'</td>';
         elementstr += '<td>'+providerstr+'</td>';
         elementstr += '<td>'+info.appName+'</td>';
         elementstr += '<td>'+info.appVersion+'</td>';
-        elementstr += '<td>'+formatBytes(info.dbSizeInBytes, 3)+'</td>';
-        elementstr += '<td>'+formatBytes(info.jreTotalMemory, 3)+'</td>';
-        elementstr += '<td>'+formatBytes(info.jreFreeMemory, 3)+'</td>';
-        elementstr += '<td>'+formatBytes(info.jreMaxMemory, 2)+'</td>';
+        // elementstr += '<td>'+formatIotas(info.dbSizeInBytes, 3)+'</td>';
         elementstr += '<td>'+info.latestMilestoneIndex+'</td>';
         elementstr += '<td>'+info.latestSolidSubtangleMilestoneIndex+'</td>';
         elementstr += '<td>'+info.lastSnapshottedMilestoneIndex+'</td>';
@@ -221,20 +593,20 @@ function divnodeinfoHline(node) {
             elementstr += '<td class="node_unsynced">'+
             'Unsynced, ' + syncdiff +
             ' milestones behind !!</b></div>';
-            const div = document.createElement('div');
-            div.innerHTML = 'The node ' + providerstr +
-            'is ' + syncdiff +
-            ' milestones behind !!';
-            swal({
-              title: 'Unsynced',
-              content: div,
-              icon: 'warning',
-              timer: 5000,
-            });
+//            const div = document.createElement('div');
+//            div.innerHTML = 'The node ' + providerstr +
+//            'is ' + syncdiff +
+//            ' milestones behind !!';
+//            swal({
+//              title: 'Unsynced',
+//              content: div,
+//              icon: 'warning',
+//              timer: 5000,
+//            });
         }
         elementstr += '<td class="text-break">'+
           camelCaseToTitleCase(info.features.toString())+'</td>';
-        elementstr += '<p>--- Màrria ----</p></table>';
+        elementstr += '<p>--- Màrrria ----</p></table>';
         /* Full getNodeInfo
                 const aNodeInfo = Object.entries(info);
                 elementstr += '<table class="table-striped table-hover'+
@@ -259,162 +631,33 @@ function divnodeinfoHline(node) {
       .catch((error) => {
         console.log(`Request error: ${error.message}`);
       });
-  //  return element+element2;
+
+  // End fetch menthod
+  // '<div>' + mainnetadr + ': ' + formatIotas(saldo) + '</div>';
+  element.innerHTML = elementstr;
+  // Legacy Hornet
+  if (node !== 'comnet') {
+    iota
+        .getBalances([mainnetadr])
+        .then(({balances}) => {
+          saldo += balances[0];
+          elementstr +=
+          '<div>Legacy Mainnet tokens on address from 1 seed</div>'+
+          '<div>' + mainnetadr + ': ' + formatIotas(saldo) + '</div>';
+          element.innerHTML = elementstr;
+        })
+        .catch((err) => {
+        // console.error(err);
+          console.log(`Request error: ${err.message}`);
+          elementstr +=
+          '<div>Error fetching balance: '+ err.message +'</div>';
+          element.innerHTML = elementstr;
+        });
+  }
+  // End Legacy Hornet
   return element;
 }
 
-
-/*
-/**
- * Fetch node info from IRI endpoint.
- * iota.getNodeInfo to Show info of the IRI fullnode.
- * @param {str} node - node to connect
- * @return {str} formatted html.
-function divnodeinfo(node) {
-  const iota = connectnode(node);
-  const element = document.createElement('container');
-  const providerstr = createprovider(node);
-  iota.getNodeInfo()
-      .then((info) => {
-        const syncdiff = info.latestMilestoneIndex -
-          info.latestSolidSubtangleMilestoneIndex;
-        const aNodeInfo = Object.entries(info);
-        const myDate = new Date(info.time);
-        element.classList.add('nodeinfo');
-        element.id = 'nodeinfo_' + node;
-        let elementstr = '<table class="table-striped table-hover'+
-          ' table-bordered table-responsive" style="text-align:center">';
-        elementstr += '<tr class="text-break">';
-        elementstr += '<th>Node name</th>';
-        elementstr += '<th>Local Time</th>';
-        elementstr += '<th>IRI IP</th>';
-        elementstr += '<th>Db size</th>';
-        elementstr += '<th>Java Total RAM</th>';
-        elementstr += '<th>Java Free RAM</th>';
-        elementstr += '<th>Java Max RAM</th>';
-        elementstr += '<th>LM</th>';
-        elementstr += '<th>LSM</th>';
-        elementstr += '<th>Sync status</th>';
-        elementstr += '</tr><tr class="text-break">';
-        elementstr += '<td>'+node+'</td>';
-        elementstr += '<td>'+myDate.toLocaleString()+'</td>';
-        elementstr += '<td>'+providerstr+'</td>';
-        elementstr += '<td>'+formatBytes(info.dbSizeInBytes, 3)+'</td>';
-        elementstr += '<td>'+formatBytes(info.jreTotalMemory, 3)+'</td>';
-        elementstr += '<td>'+formatBytes(info.jreFreeMemory, 3)+'</td>';
-        elementstr += '<td>'+formatBytes(info.jreMaxMemory, 2)+'</td>';
-        elementstr += '<td>'+info.latestMilestoneIndex+'</td>';
-        elementstr += '<td>'+info.latestSolidSubtangleMilestoneIndex+'</td>';
-        switch (syncdiff) {
-          case 0:
-            // Synced
-            elementstr += '<td class="node_synced">' +
-            'Synced</td>';
-            break;
-          case 1:
-            // 1 behind!
-            elementstr += '<td class="node_warn_synced">'+
-            syncdiff +
-            ' milestone behind</td>';
-            break;
-          case 2,3,4,5:
-            // a few behind!
-            elementstr += '<td class="node_warn_synced">'+
-            syncdiff +
-            ' milestones behind</td>';
-            break;
-          default:
-            // Unsynced!
-            elementstr += '<td class="node_unsynced">'+
-            'Unsynced, ' + syncdiff +
-            ' milestones behind !!</b></div>';
-            const div = document.createElement('div');
-            div.innerHTML = 'The node ' + providerstr +
-            'is ' + syncdiff +
-            ' milestones behind !!';
-            swal({
-              title: 'Unsynced',
-              content: div,
-              icon: 'warning',
-            });
-        }
-        elementstr += '</table><table class="table-striped table-hover'+
-          ' table-bordered table-responsive" style="text-align:center">';
-        elementstr += '<tr class="text-break">';
-        aNodeInfo.forEach(function(add) {
-          elementstr += '<th>'+
-          camelCaseToTitleCase(add[0])+'</th>';
-        });
-        elementstr += '</tr><tr class="text-break">';
-        aNodeInfo.forEach(function(add) {
-          elementstr += '<td class="text-break iota_address">' +
-          add[1]+'</td>';
-        });
-        elementstr += '</tr>';
-        elementstr += '</table>';
-
-        let str = elementstr;
-        //str += +'<div class="nodeinfo">Nodeinfo: ';
-        //str += 'Local Time: '+myDate.toLocaleString();
-        //str += ' IRI IP: ' + providerstr;
-        //str += ' Db size: ' + formatBytes(info.dbSizeInBytes, 3);
-        //str += ' Java RAM: Total: ' + formatBytes(info.jreTotalMemory, 3);
-        //str += ', Free: ' + formatBytes(info.jreFreeMemory, 3);
-        //str += ', Max: ' + formatBytes(info.jreMaxMemory, 2);
-        //str += '</div>';
-        switch (syncdiff) {
-          case 0:
-            // Synced
-            str += '<div class="node_synced">' +
-            '<b>LM / LSM: ' + info.latestMilestoneIndex +
-            ' / ' + info.latestSolidSubtangleMilestoneIndex +
-            ': Your node is currently ' +
-            'Synced</b></div>';
-            break;
-          case 1:
-          case 2:
-          case 3:
-            // a few behind!
-            str += '<div class="node_warn_synced">'+
-            '<b>LM / LSM: ' + info.latestMilestoneIndex +
-            ' / ' + info.latestSolidSubtangleMilestoneIndex +
-            ': Your node is currently '+syncdiff+
-            ' milestone(s) behind</b></div>';
-            break;
-          default:
-            // Unsynced!
-            str += '<div class="node_unsynced">'+
-            '<b>LM / LSM: ' + info.latestMilestoneIndex +
-            ' / ' + info.latestSolidSubtangleMilestoneIndex +
-            ': !! Your node is currently ' +
-            'Unsynced and ' + syncdiff +
-            ' milestones behind !!</b></div>';
-            const div = document.createElement('div');
-            div.innerHTML = str;
-            swal({
-              title: 'Unsynced',
-              content: div,
-              icon: 'warning',
-            });
-        }
-        str += '<div class="container-fluid text-break"><div class="row">';
-        aNodeInfo.forEach(function(add) {
-          str += '<div class="col-sm-3 border"><b>'+
-          camelCaseToTitleCase(add[0])+': </b>'+
-          '<div class="iota_address">' +
-          add[1]+'</div></div>';
-        });
-        str += '</div></div>';
-        element.innerHTML = str;
-      })
-      .catch((error) => {
-        console.log(`Request error: ${error.message}`);
-      });
-
-  //  return element+element2;
-  return element;
-}
- */
 
 /**
  * Fetch peer info from IRI endpoint.
@@ -442,7 +685,7 @@ function divpeerinfo(node) {
         //        '<div class="row">';
         element.classList.add('peerinfo_connected');
         element.id = 'peerinfo_'+node;
-        let UnconnectedPeers = '';
+        //        let UnconnectedPeers = '';
         const totalPeers = aPeers.length;
         let peerCounter = 1;
         let peerCounterUnconnected = 0;
@@ -467,12 +710,12 @@ function divpeerinfo(node) {
           const aPeer = Object.entries(oPeer[1]).sort();
           let str = '<tr>';
           if (oPeer[1].connected == false) {
-            str = '<tr class="table-danger">';
+            str = '<tr class="table-warning">';
             peerCounterUnconnected ++;
-            UnconnectedPeers += '<div>Domain: '+
-              oPeer[1].domain+
-              ', address: '+oPeer[1].address+
-              '</div>';
+            //            UnconnectedPeers += '<div>Domain: '+
+            //              oPeer[1].domain+
+            //              ', address: '+oPeer[1].address+
+            //              '</div>';
           }
           switch (peerCounter) {
             case 1:
@@ -500,17 +743,10 @@ function divpeerinfo(node) {
           peerCounter ++;
           elementstr += str;
           if (peerCounterUnconnected > 2) {
-            const div = document.createElement('div');
-            div.innerHTML = UnconnectedPeers;
-            swal({
-              title: 'Not connected Peer(s):',
-              content: div,
-              icon: 'warning',
-              timer: 5000,
-            });
+            str += '</tr><tr class="table-danger">';
+            str += '<td>Warning, more than 2 Peers disconnected</td>';
+            str += '</tr>';
           }
-          // close table and container
-          //          str += '</table></container>';
           str += '</table>';
         });
         elementstr += '</div>';
@@ -522,15 +758,138 @@ function divpeerinfo(node) {
   return element;
 }
 
+/**
+ * Fetch IOTA address from comnet endpoint.
+ * Show in console and div.
+ * @return {str} formatted html.
+ */
+// function comnetAdres() {
+//  // /////////////////////////////
+//  // Create an address from a new seed
+//  // ///
+//  // First: run this code in a unix based terminal
+//  //        to generate an 81 Tryte seed.
+//  // 'cat /dev/urandom |LC_ALL=C tr -dc 'A-Z9' | fold -w 81 | head -n 1'
+//  // Paste the output of the above code into the 'seed' section below.
+//  // /////////////////////////////
+//
+//  const iota = connectnode('comnet');
+//  const element = document.createElement('container');
+//  element.classList.add('nodeinfo');
+//  element.id = 'comnet_tokens_XeeVee';
+//  const firstaddress =
+//  'HCUIZQALXEGDUENRCQDHKEBVBKGDS9NAMCTALLMVRZRGPG'+
+//  'ZO9BUUKNUQEJTVYGASBSRMHML9OWKGB9MIW'+'QVBSXV9NX';
+//  const secondaddress =
+//  'BWQBEEWMIJXVAQEFMKESV9FMXFWKPWNHYB9YGOUJ9TSLYE'+
+//  'YEADPEHOEBXRLGOFBAJNMRMJAO9MOBAOMTX'+'IIAJIVCQB';
+//  let saldo = 0;
+//  let saldo2 = 0;
+//  // Use this block if you need new addresess from the seeds
+//  /*
+//  const seed =
+//  'EXTKNVEMPTH9DKQNLOH9EVPGEZLZKPRFQPYXLQKOMCYI9T'+
+//  'WZPZGZEVI9DCJZRAFFLJJVZE9ZUSFGNZUIA';
+//  const seed2 =
+//  'FC9GRKIXHTXWYZNQ9JGYZZPJZ9P9IVDZVYXB9UJTUELLNA'+
+//  'WZYK9EJLHHFPEGMHCOBFIGSKTUDQURXSKXG';
+//  iota
+//      .getNewAddress(seed, 0)
+//      .then((address) => {
+//        console.log('Your address for seed 1 is: ' + address);
+//        console.log('Paste this address into '+
+//      'https://faucet.comnet.einfachiota.de/');
+//      })
+//      .catch((err) => {
+//        console.log(err);
+//      });
+//
+//  iota
+//      .getNewAddress(seed2, 0)
+//      .then((address) => {
+//        console.log('Your address for seed 2 is: ' + address);
+//        console.log('Paste this address into '+
+//      'https://faucet.comnet.einfachiota.de/');
+//      })
+//      .catch((err) => {
+//        console.log(err);
+//      });
+//* /
+//  // End Use this block if you need new addresess
+//  iota
+//      .getBalances([firstaddress, secondaddress])
+//      .then(({balances}) => {
+//        //        console.log(balances);
+//        //        console.log(balances[0]);
+//        saldo += balances[0];
+//        saldo2 += balances[1];
+//        //        console.log(saldo);
+//        element.innerHTML =
+//        '<div>Comnet tokens on addresses from 2 seeds</div>'+
+//        '<div>' + firstaddress + ': ' + formatIotas(saldo) + '</div>'+
+//        '<div>' + secondaddress + ': ' + formatIotas(saldo2) + '</div>';
+//      })
+//      .catch((err) => {
+//        console.log(`Request error: ${err.message}`);
+//        element.innerHTML =
+//        '<div>Comnet getBalances error: '+err.message+'</div>';
+//        // console.error(err);
+//      });
+//  return element;
+// }
 
-document.body.appendChild(divnodeinfoHline('iota'));
-document.body.appendChild(divpeerinfo('iota'));
-document.body.appendChild(divnodeinfoHline('iota2'));
-document.body.appendChild(divpeerinfo('iota2'));
+// /**
+// * Pingpong funds from comnet endpoint.
+// * Show in console and div.
+// * @return {str} formatted html.
+// */// function comnetPingPongFunds() {
+// // /////////////////////////////
+// // Transfer 1000 iota from  the first address
+// // to the second address from the same seed
+// // Then Pong it back to the first
+// // /////////////////////////////
+//  const iota = connectnode('comnet');
+//  const element = document.createElement('container');
+//  element.classList.add('nodeinfo');
+//  element.id = 'comnet_balances_XeeVee';
+//  const firstaddress =
+//  'HCUIZQALXEGDUENRCQDHKEBVBKGDS9NAMCTALLMVRZRGPG'+
+//  'ZO9BUUKNUQEJTVYGASBSRMHML9OWKGB9MIW'+'QVBSXV9NX';
+//  let saldo = 0;
+//  return element;
+// }
+
+
+// const element = document.createElement('div');
+// element.id = 'test_recursive';
+// ReactDOM.render(<App />, document.getElementById('test_recursive'));
+// document.body.appendChild(app());
+// comnetAdres();
+// document.body.appendChild(comnetAdres());
+// document.body.appendChild(connectgoshimmer('goshimmer2',
+//    '/info'));
+// document.body.appendChild(connectgoshimmer('goshimmer2',
+//    '/autopeering/neighbors'));
+document.body.appendChild(connectcpt2('iota',
+    'info'));
+document.body.appendChild(connectcpt2('cpt2',
+    'info'));
+// document.body.appendChild(divnodeinfoHline('iota'));
+// document.body.appendChild(divnodeinfoHline('iota2'));
+// document.body.appendChild(divpeerinfo('iota2'));
 document.body.appendChild(divnodeinfoHline('hornet'));
+document.body.appendChild(connectgoshimmer('goshimmer',
+    '/info'));
+// document.body.appendChild(divpeerinfo('iota'));
+document.body.appendChild(connectcpt2('iota',
+    'peers'));
+document.body.appendChild(connectcpt2('cpt2',
+    'peers'));
 document.body.appendChild(divpeerinfo('hornet'));
-document.body.appendChild(divnodeinfoHline('comnet'));
-document.body.appendChild(divpeerinfo('comnet'));
+// document.body.appendChild(divnodeinfoHline('comnet'));
+// document.body.appendChild(divpeerinfo('comnet'));
+document.body.appendChild(connectgoshimmer('goshimmer',
+    '/autopeering/neighbors'));
 // document.body.appendChild(divnodeinfo('iota'));
 // document.body.appendChild(divnodeinfo('iota2'));
 // const nodediv1 = document.getElementById('nodeinfo_iota');
@@ -539,32 +898,70 @@ document.body.appendChild(divpeerinfo('comnet'));
 // document.body.removeChild(nodediv2);
 // document.body.appendChild(divnodeinfo());
 // document.body.appendChild(divnodeinfo2());
-
 // Rebuild page every 15 seconds
 setInterval(function() {
 //  const nodediv1 = document.getElementById('nodeinfo_iota');
 //  const nodediv2 = document.getElementById('nodeinfo_iota2');
+//  const nodedivh0 = document.getElementById('comnet_tokens_XeeVee');
   const nodedivh1 = document.getElementById('nodeinfo_h_iota');
-  const nodedivh2 = document.getElementById('nodeinfo_h_iota2');
+  const nodedivh6 = document.getElementById('nodeinfo_h_cpt2');
   const nodedivh3 = document.getElementById('nodeinfo_h_hornet');
-  const nodedivh4 = document.getElementById('nodeinfo_h_comnet');
+  const nodedivh5 = document.getElementById('nodeinfo_h_goshimmer');
+  //  const nodedivh6 = document.getElementById('nodeinfo_h_goshimmer2');
+  //  const nodedivh2 = document.getElementById('nodeinfo_h_iota2');
+  // const nodedivh4 = document.getElementById('nodeinfo_h_comnet');
   //  const olddiv2 = document.getElementById('nodeinfo');
   //  const olddiv3 = document.getElementById('nodeinfo2');
   const peerdiv1 = document.getElementById('peerinfo_iota');
-  const peerdiv2 = document.getElementById('peerinfo_iota2');
+  const peerdiv6 = document.getElementById('peerinfo_cpt2');
   const peerdiv3 = document.getElementById('peerinfo_hornet');
-  const peerdiv4 = document.getElementById('peerinfo_comnet');
-  document.body.replaceChild(divnodeinfoHline('iota'), nodedivh1);
-  document.body.replaceChild(divpeerinfo('iota'), peerdiv1);
-  document.body.replaceChild(divnodeinfoHline('iota2'), nodedivh2);
-  document.body.replaceChild(divpeerinfo('iota2'), peerdiv2);
+  const peerdiv5 = document.getElementById('peerinfo_goshimmer');
+  //  const peerdiv6 = document.getElementById('peerinfo_goshimmer2');
+  //  const peerdiv2 = document.getElementById('peerinfo_iota2');
+  // const peerdiv4 = document.getElementById('peerinfo_comnet');
+  // document.body.replaceChild(comnetAdres(), nodedivh0);
+  //  document.body.replaceChild(connectgoshimmer('goshimmer2',
+  //      '/info'), nodedivh6);
+  //  document.body.replaceChild(connectgoshimmer('goshimmer2',
+  //      '/autopeering/neighbors'), peerdiv6);
+  document.body.replaceChild(connectcpt2('iota',
+      'info'), nodedivh1);
+  document.body.replaceChild(connectcpt2('cpt2',
+      'info'), nodedivh6);
   document.body.replaceChild(divnodeinfoHline('hornet'), nodedivh3);
+  document.body.replaceChild(connectgoshimmer('goshimmer',
+      '/info'), nodedivh5);
+  //  document.body.replaceChild(divnodeinfoHline('iota2'), nodedivh2);
+  //  document.body.replaceChild(divpeerinfo('iota2'), peerdiv2);
+  document.body.replaceChild(connectcpt2('iota',
+      'peers'), peerdiv1);
+  document.body.replaceChild(connectcpt2('cpt2',
+      'peers'), peerdiv6);
+  // document.body.replaceChild(divnodeinfoHline('comnet'), nodedivh4);
+  // document.body.replaceChild(divpeerinfo('comnet'), peerdiv4);
   document.body.replaceChild(divpeerinfo('hornet'), peerdiv3);
-  document.body.replaceChild(divnodeinfoHline('comnet'), nodedivh4);
-  document.body.replaceChild(divpeerinfo('comnet'), peerdiv4);
-//  document.body.replaceChild(divnodeinfo('iota'), nodediv1);
-//  document.body.replaceChild(divnodeinfo('iota2'), nodediv2);
+  document.body.replaceChild(connectgoshimmer('goshimmer',
+      '/autopeering/neighbors'), peerdiv5);
+  //  document.body.replaceChild(divnodeinfo('iota'), nodediv1);
+  //  document.body.replaceChild(divnodeinfo('iota2'), nodediv2);
   //  document.body.replaceChild(divnodeinfo(), olddiv2);
   //  document.body.replaceChild(divnodeinfo2(), olddiv3);
+  // Catch errors since some browsers throw when using the new `type` option.
+  // https://bugs.webkit.org/show_bug.cgi?id=209216
+//  try {
+//    // Create the performance observer.
+//    const po = new PerformanceObserver((list) => {
+//      for (const entry of list.getEntries()) {
+//        // Logs all server timing data for this response
+//        console.log('Server Timing', entry.serverTiming);
+//      }
+//    });
+//    // Start listening for `navigation` entries to be dispatched.
+//    // po.observe({type: 'navigation', buffered: true});
+//    // po.observe({type: 'resource', buffered: true});
+//    po.observe({type: 'longtask', buffered: true});
+//  } catch (e) {
+//    // Do nothing if the browser doesn't support this API.
+//  }
 }, 15000,
 );

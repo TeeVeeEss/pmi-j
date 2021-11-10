@@ -15,17 +15,28 @@ module.exports = {
   },
   devtool: 'inline-source-map',
   devServer: {
-    contentBase: path.join(__dirname, 'dist'),
+    // contentBase: path.join(__dirname, 'dist'),
     compress: true,
     host: '0.0.0.0',
     port: 9876,
-    disableHostCheck: true,
+    // disableHostCheck: true,
     historyApiFallback: true,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+      "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
+    },
     proxy: {
       '/api': {
-      target: 'http://192.168.178.12:14265',
+      target: 'http://192.168.178.12:14267',
       secure: false
       }
+    }
+  },
+  resolve: {
+    fallback: {
+      "crypto": require.resolve("crypto-browserify"),
+      "stream": require.resolve("stream-browserify")
     }
   },
   plugins: [
@@ -44,7 +55,7 @@ module.exports = {
       path: './pmij.env', // load this now instead of the ones in '.env'
       safe: true, // load '.env.example' to verify the '.env' variables are all set. Can also be a string to a different file.
       systemvars: true, // load all the predefined 'process.env' variables which will trump anything local per dotenv specs.
-      silent: true, // hide any errors
+      silent: false, // hide any errors
       defaults: false // load '.env.defaults' as the default values if empty.
     }),
   ],

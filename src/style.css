@@ -14,20 +14,20 @@
   background: url('./logo.png');
 }
 .nodeinfo {
-  color: black;
+  color: white;
   font-family: 'Titillium Web', sans-serif;
 }
 .iota_address {
-  color: black;
+  color: white;
   font-family: 'Titillium Web', sans-serif;
   font-size: small;
 }
 .peerinfo_connected {
-  color: blue;
+  color: lightblue;
   font-family: 'Titillium Web', sans-serif;
 }
 .peerinfo_unconnected {
-  color: red;
+  color: #82334d;
   font-family: 'Titillium Web', sans-serif;
 }
 .col
