@@ -1,4 +1,3 @@
-// import _ from 'lodash';
 import './style.css';
 // import Logo from './logo.png';
 // import Data from './data.xml';
@@ -10,8 +9,37 @@ import {composeAPI} from '@iota/core';
 // import swal from 'sweetalert';
 // import yargs from 'yargs';
 
-// console.log('This is index JS....!');
-// Lodash, now imported by this script
+// const { ClientBuilder } = require('@iota/client')
+// import {ClientBuilder} from '@iota/client';
+// const client = new ClientBuilder()
+//    .node('https://api.lb-0.testnet.chrysalis2.com')
+//    .build();
+// client.getInfo().then(console.log).catch(console.error);
+
+// const {SingleNodeClient} = require('@iota/iota.js');
+import {SingleNodeClient} from '@iota/iota.js';
+
+/**
+ * Example for use of new lib iota.js
+ */
+async function run() {
+  const client = new SingleNodeClient('https://chrysalis-nodes.iota.org');
+  const info = await client.info();
+  console.log('Node Info');
+  console.log('\tName:', info.name);
+  console.log('\tVersion:', info.version);
+  console.log('\tIs Healthy:', info.isHealthy);
+  console.log('\tNetwork Id:', info.networkId);
+  console.log('\tLatest Milestone Index:', info.latestMilestoneIndex);
+  console.log('\tConfirmed Milestone Index:', info.confirmedMilestoneIndex);
+  console.log('\tPruning Index:', info.pruningIndex);
+  console.log('\tFeatures:', info.features);
+  console.log('\tMin PoW Score:', info.minPoWScore);
+}
+
+run()
+    .then(() => console.log('Done'))
+    .catch((err) => console.error(err));
 
 /**
  * Take a single camel case string and convert it to a string of separate
@@ -111,7 +139,8 @@ function createprovider(provider) {
     if (provider == 'iota') {
       providerstr += 'http://' +
         process.env.IRI_NODE_IP + ':' +
-        process.env.IRI_NODE_PORT;
+        process.env.IRI_NODE_PORT+
+        '/api/v1/';
     };
     if (provider == 'iota2') {
       providerstr += 'http://' +
@@ -307,15 +336,11 @@ function connectcpt2(provider, type) {
   // using pmij.env
   const providerstr = createprovider(provider)+type;
   const element = document.createElement('container');
-  switch (type) {
-    case 'info':
-      element.classList.add('nodeinfo');
-      element.id = 'nodeinfo_h_' + provider;
-      break;
-    case 'peers':
-      element.classList.add('peerinfo');
-      element.id = 'peerinfo_' + provider;
-  }
+  const mainbech32adr =
+    'iota1qp853z2qtu386vkzdef4a36l7wl'+
+    '8wvcln9q24h0n5g0hcccyan9pc8fqz03';
+  const balanceprovider = 'http://192.168.178.12:14267/api/v1/addresses/';
+  let saldo = 0;
   let elementstr = '<table class="table-striped table-hover'+
     ' table-bordered table-responsive" '+
     'style="text-align:center">';
@@ -328,6 +353,38 @@ function connectcpt2(provider, type) {
   elementstr += '<td>'+provider+'</td>';
   elementstr += '<td>'+providerstr+'</td>';
   elementstr += '</tr><tr>';
+  switch (type) {
+    case 'info':
+      element.classList.add('nodeinfo');
+      element.id = 'nodeinfo_h_' + provider;
+      // Fetch the balance from a Mainnet address
+      // curl http://192.168.178.12:14267/api/v1/addresses/+
+      // iota1qp853z2qtu386vkzdef4a36l7wl8wvcln9q24h0n5g0hcccyan9pc8fqz03
+      /* Fetch method Chrysalis */
+      (async () => {
+        try {
+          const response = await fetch(balanceprovider+mainbech32adr);
+          if (response.ok) {
+            const jsonmap = new Map(Object.entries(await response.json()));
+            console.log('Fetched: ' + jsonmap);
+            saldo += jsonmap.get('data').balance;
+            elementstr +=
+              '<div>Mainnet tokens on address from 1 seed: '+
+              formatIotas(saldo)+'</div>';
+            elementstr += '<div>' + iterate(jsonmap, 'header', '', [], []);
+            elementstr += '</div>';
+          } else {
+            console.log('Fetch error: ' + response.status);
+          }
+        } catch (e) {
+          console.log('Catched fetch error: ' + e);
+        }
+      })();
+      break;
+    case 'peers':
+      element.classList.add('peerinfo');
+      element.id = 'peerinfo_' + provider;
+  }
   /* Fetch method */
   (async () => {
     try {
@@ -357,7 +414,7 @@ function connectcpt2(provider, type) {
         //        }
         //        elementstr += iterate(json, 'detail', '', [], []);
         elementstr += '</tr>';
-        elementstr += '<p>--- Màrria ----</p></table>';
+        elementstr += '<p>--- Màrrria ----</p></table>';
         //      elementstr += '</table>';
         element.innerHTML = elementstr;
         return element;
@@ -411,76 +468,16 @@ function connectgoshimmer(provider, type) {
   elementstr += '</tr><tr>';
   //  elementstr += '<tr class="text-break">';
 
-  /* XMLHttpRequest method
-  const xmlhttp = new XMLHttpRequest();
-  //  xmlhttp.addEventListener("progress", updateProgress);
-  xmlhttp.onreadystatechange = function() {
-    console.log(this.readyState);
-    console.log(this.status);
-    if (this.readyState == 4) {
-      const myObj = JSON.parse(this.responseText); let x; let y;
-      for (x in myObj) {
-        if ({}.hasOwnProperty.call(myObj, x)) {
-          elementstr += '<th>'+
-            camelCaseToTitleCase(x)+'</th>';
-        }
-      }
-      //      elementstr += '</tr><tr class="text-break">';
-      elementstr += '</tr><tr>';
-      elementstr += '<td>'+provider+'</td>';
-      elementstr += '<td>'+myObj.nodeAlias+'</td>';
-      elementstr += '<td>'+myObj.toLocaleString+'</td>';
-      elementstr += '<td>'+providerstr+'</td>';
-      //      elementstr += '<td class="text-break iota_address">';
-      for (y in myObj) {
-        if ({}.hasOwnProperty.call(myObj, y)) {
-          elementstr += '<td>'+
-            myObj[y]+'</td>';
-        }
-      }
-      elementstr += '</tr>';
-      elementstr += '<p>--- Màrria ----</p></table>';
-      //      elementstr += '</table>';
-      element.innerHTML = elementstr;
-      return element;
-    }
-  };
-  xmlhttp.open('GET', providerstr, true);
-  //  xmlhttp.timeout = 2000
-  xmlhttp.send(null);
-//  XMLHttpRequest method end
-*/
-
   /* Fetch method */
   (async () => {
     try {
-      // let promise = fetch(providerstr);
       const response = await fetch(providerstr);
       if (response.ok) {
-        // const json = await response.json();
         const jsonmap = new Map(Object.entries(await response.json()));
-        //        let x;
-        //        let y;
         console.log('Fetched: ' + jsonmap);
-        //        for (x in json) {
-        //          if ({}.hasOwnProperty.call(json, x)) {
-        //            elementstr += '<th>'+
-        //         camelCaseToTitleCase(x)+'</th>';
-        //          }
-        //        }
-        //        elementstr += '<td>'+json.identityID+'</td>';
-        //        elementstr += '<td>'+json.publicKey+'</td>';
         elementstr += iterate(jsonmap, 'header', '', [], []);
-        //        for (y in json) {
-        //          if ({}.hasOwnProperty.call(json, y)) {
-        //            elementstr += '<td>'+
-        //         json[y]+'</td>';
-        //          }
-        //        }
-        //        elementstr += iterate(json, 'detail', '', [], []);
         elementstr += '</tr>';
-        elementstr += '<p>--- Màrria ----</p></table>';
-        //      elementstr += '</table>';
+        elementstr += '<p>--- Màrrria ----</p></table>';
         element.innerHTML = elementstr;
         return element;
       } else {
@@ -490,93 +487,7 @@ function connectgoshimmer(provider, type) {
       console.log('Catched fetch error: ' + e);
     }
   })();
-
   // End fetch menthod
-
-  /* selected info node
-  let elementstr = '<table class="table-striped table-hover'+
-    ' table-bordered table-responsive" style="text-align:center">';
-  elementstr += '<tr>';
-  elementstr += '<th>Node name</th>';
-  elementstr += '<th>Node Alias</th>';
-  elementstr += '<th>Local Time</th>';
-  elementstr += '<th>Node API</th>';
-  elementstr += '<th>App name</th>';
-  elementstr += '<th>App version</th>';
-  elementstr += '<th>Db size</th>';
-  elementstr += '<th>LM</th>';
-  elementstr += '<th>LSM</th>';
-  elementstr += '<th>Snapshot</th>';
-  elementstr += '<th>Tips</th>';
-  if (info.appName == 'IRI') {
-    elementstr += '<th>Connected peers</th>';
-  }
-  if (info.appName == 'HORNET') {
-    elementstr += '<th>Known peers</th>';
-  }
-  elementstr += '<th>Sync status</th>';
-  elementstr += '<th>Features</th>';
-  elementstr += '</tr><tr>';
-  elementstr += '<td>'+node+'</td>';
-  elementstr += '<td>'+info.nodeAlias+'</td>';
-  elementstr += '<td>'+myDate.toLocaleString()+'</td>';
-  elementstr += '<td>'+providerstr+'</td>';
-  elementstr += '<td>'+info.appName+'</td>';
-  elementstr += '<td>'+info.appVersion+'</td>';
-  elementstr += '<td>'+formatBytes(info.dbSizeInBytes, 3)+'</td>';
-  elementstr += '<td>'+info.latestMilestoneIndex+'</td>';
-  elementstr += '<td>'+info.latestSolidSubtangleMilestoneIndex+'</td>';
-  elementstr += '<td>'+info.lastSnapshottedMilestoneIndex+'</td>';
-  elementstr += '<td>'+info.tips+'</td>';
-  elementstr += '<td>'+info.neighbors+'</td>';
-  switch (syncdiff) {
-    case 0:
-      if (info.neighbors == 0) {
-        // Synced, but no peers
-        elementstr += '<td class="node_warn_synced">' +
-        'Sync status unknown, no peers</td>';
-        break;
-      }
-     // Synced, 1 or more peers
-     elementstr += '<td class="node_synced">' +
-     'Synced</td>';
-     break;
-   case 1:
-     // 1 behind!
-     elementstr += '<td class="node_warn_synced">'+
-     syncdiff +
-     ' milestone behind</td>';
-     break;
-   case 2, 3, 4, 5:
-     // a few behind!
-     elementstr += '<td class="node_warn_synced">'+
-     syncdiff +
-     ' milestones behind</td>';
-     break;
-   default:
-     // Unsynced!
-     elementstr += '<td class="node_unsynced">'+
-     'Unsynced, ' + syncdiff +
-     ' milestones behind !!</b></div>';
-//      const div = document.createElement('div');
-//      div.innerHTML = 'The node ' + providerstr +
-//      'is ' + syncdiff +
-//      ' milestones behind !!';
-//      swal({
-//        title: 'Unsynced',
-//        content: div,
-//        icon: 'warning',
-//        timer: 5000,
-//      });
-    }
-    elementstr += '<td class="text-break">'+
-      camelCaseToTitleCase(info.features.toString())+'</td>';
-    elementstr += '<p>--- Màrria ----</p></table>';
-*/
-  // Full getNodeInfo
-  //  const aNodeInfo = Object.entries(myObj);
-  // console.log(`elementstr: ${elementstr}`);
-  // End full getNodeInfo
   return element;
 };
 
@@ -607,8 +518,8 @@ function divnodeinfoHline(node) {
   const element = document.createElement('container');
   const providerstr = createprovider(node);
   const mainnetadr =
-    'CGPGFKBHXRHWLWLXZOSFTWOAFIOCOFPTIAFBMIVS9BTJM'+
-    'IHOSQL9RKSXXPBW9NGQCXMUP9CPGUEDMGHMCYQQ9HDD9X';
+   'CGPGFKBHXRHWLWLXZOSFTWOAFIOCOFPTIAFBMIVS9BTJM'+
+   'IHOSQL9RKSXXPBW9NGQCXMUP9CPGUEDMGHMCYQQ9HDD9X';
   let saldo = 0;
   let elementstr = '';
   iota.getNodeInfo()
@@ -695,7 +606,7 @@ function divnodeinfoHline(node) {
         }
         elementstr += '<td class="text-break">'+
           camelCaseToTitleCase(info.features.toString())+'</td>';
-        elementstr += '<p>--- Màrria ----</p></table>';
+        elementstr += '<p>--- Màrrria ----</p></table>';
         /* Full getNodeInfo
                 const aNodeInfo = Object.entries(info);
                 elementstr += '<table class="table-striped table-hover'+
@@ -721,21 +632,18 @@ function divnodeinfoHline(node) {
         console.log(`Request error: ${error.message}`);
       });
 
-  // Fetch the balance from a Mainnet address
+  // End fetch menthod
+  // '<div>' + mainnetadr + ': ' + formatIotas(saldo) + '</div>';
+  element.innerHTML = elementstr;
+  // Legacy Hornet
   if (node !== 'comnet') {
     iota
         .getBalances([mainnetadr])
         .then(({balances}) => {
-        //        console.log(balances);
-        //        console.log(balances[0]);
           saldo += balances[0];
-          // saldo2 += balances[1];
-          //        console.log(saldo);
-          // element.innerHTML =
           elementstr +=
-          '<div>Mainnet tokens on address from 1 seed</div>'+
+          '<div>Legacy Mainnet tokens on address from 1 seed</div>'+
           '<div>' + mainnetadr + ': ' + formatIotas(saldo) + '</div>';
-          // '<div>' + secondaddress + ': ' + saldo2 + '</div>';
           element.innerHTML = elementstr;
         })
         .catch((err) => {
@@ -746,153 +654,10 @@ function divnodeinfoHline(node) {
           element.innerHTML = elementstr;
         });
   }
-  //  return element+element2;
+  // End Legacy Hornet
   return element;
 }
 
-
-/*
-/**
- * Fetch node info from IRI endpoint.
- * iota.getNodeInfo to Show info of the IRI fullnode.
- * @param {str} node - node to connect
- * @return {str} formatted html.
-function divnodeinfo(node) {
-  const iota = connectnode(node);
-  const element = document.createElement('container');
-  const providerstr = createprovider(node);
-  iota.getNodeInfo()
-      .then((info) => {
-        const syncdiff = info.latestMilestoneIndex -
-          info.latestSolidSubtangleMilestoneIndex;
-        const aNodeInfo = Object.entries(info);
-        const myDate = new Date(info.time);
-        element.classList.add('nodeinfo');
-        element.id = 'nodeinfo_' + node;
-        let elementstr = '<table class="table-striped table-hover'+
-          ' table-bordered table-responsive" style="text-align:center">';
-        elementstr += '<tr class="text-break">';
-        elementstr += '<th>Node name</th>';
-        elementstr += '<th>Local Time</th>';
-        elementstr += '<th>IRI IP</th>';
-        elementstr += '<th>Db size</th>';
-        elementstr += '<th>LM</th>';
-        elementstr += '<th>LSM</th>';
-        elementstr += '<th>Sync status</th>';
-        elementstr += '</tr><tr class="text-break">';
-        elementstr += '<td>'+node+'</td>';
-        elementstr += '<td>'+myDate.toLocaleString()+'</td>';
-        elementstr += '<td>'+providerstr+'</td>';
-        elementstr += '<td>'+formatBytes(info.dbSizeInBytes, 3)+'</td>';
-        elementstr += '<td>'+info.latestMilestoneIndex+'</td>';
-        elementstr += '<td>'+info.latestSolidSubtangleMilestoneIndex+'</td>';
-        switch (syncdiff) {
-          case 0:
-            // Synced
-            elementstr += '<td class="node_synced">' +
-            'Synced</td>';
-            break;
-          case 1:
-            // 1 behind!
-            elementstr += '<td class="node_warn_synced">'+
-            syncdiff +
-            ' milestone behind</td>';
-            break;
-          case 2,3,4,5:
-            // a few behind!
-            elementstr += '<td class="node_warn_synced">'+
-            syncdiff +
-            ' milestones behind</td>';
-            break;
-          default:
-            // Unsynced!
-            elementstr += '<td class="node_unsynced">'+
-            'Unsynced, ' + syncdiff +
-            ' milestones behind !!</b></div>';
-            const div = document.createElement('div');
-            div.innerHTML = 'The node ' + providerstr +
-            'is ' + syncdiff +
-            ' milestones behind !!';
-            swal({
-              title: 'Unsynced',
-              content: div,
-              icon: 'warning',
-            });
-        }
-        elementstr += '</table><table class="table-striped table-hover'+
-          ' table-bordered table-responsive" style="text-align:center">';
-        elementstr += '<tr class="text-break">';
-        aNodeInfo.forEach(function(add) {
-          elementstr += '<th>'+
-          camelCaseToTitleCase(add[0])+'</th>';
-        });
-        elementstr += '</tr><tr class="text-break">';
-        aNodeInfo.forEach(function(add) {
-          elementstr += '<td class="text-break iota_address">' +
-          add[1]+'</td>';
-        });
-        elementstr += '</tr>';
-        elementstr += '</table>';
-
-        let str = elementstr;
-        //str += +'<div class="nodeinfo">Nodeinfo: ';
-        //str += 'Local Time: '+myDate.toLocaleString();
-        //str += ' IRI IP: ' + providerstr;
-        //str += ' Db size: ' + formatBytes(info.dbSizeInBytes, 3);
-        //str += '</div>';
-        switch (syncdiff) {
-          case 0:
-            // Synced
-            str += '<div class="node_synced">' +
-            '<b>LM / LSM: ' + info.latestMilestoneIndex +
-            ' / ' + info.latestSolidSubtangleMilestoneIndex +
-            ': Your node is currently ' +
-            'Synced</b></div>';
-            break;
-          case 1:
-          case 2:
-          case 3:
-            // a few behind!
-            str += '<div class="node_warn_synced">'+
-            '<b>LM / LSM: ' + info.latestMilestoneIndex +
-            ' / ' + info.latestSolidSubtangleMilestoneIndex +
-            ': Your node is currently '+syncdiff+
-            ' milestone(s) behind</b></div>';
-            break;
-          default:
-            // Unsynced!
-            str += '<div class="node_unsynced">'+
-            '<b>LM / LSM: ' + info.latestMilestoneIndex +
-            ' / ' + info.latestSolidSubtangleMilestoneIndex +
-            ': !! Your node is currently ' +
-            'Unsynced and ' + syncdiff +
-            ' milestones behind !!</b></div>';
-            const div = document.createElement('div');
-            div.innerHTML = str;
-            swal({
-              title: 'Unsynced',
-              content: div,
-              icon: 'warning',
-            });
-        }
-        str += '<div class="container-fluid text-break"><div class="row">';
-        aNodeInfo.forEach(function(add) {
-          str += '<div class="col-sm-3 border"><b>'+
-          camelCaseToTitleCase(add[0])+': </b>'+
-          '<div class="iota_address">' +
-          add[1]+'</div></div>';
-        });
-        str += '</div></div>';
-        element.innerHTML = str;
-      })
-      .catch((error) => {
-        console.log(`Request error: ${error.message}`);
-      });
-
-  //  return element+element2;
-  return element;
-}
- */
 
 /**
  * Fetch peer info from IRI endpoint.
@@ -981,17 +746,7 @@ function divpeerinfo(node) {
             str += '</tr><tr class="table-danger">';
             str += '<td>Warning, more than 2 Peers disconnected</td>';
             str += '</tr>';
-            //            const div = document.createElement('div');
-            //            div.innerHTML = UnconnectedPeers;
-            //            swal({
-            //              title: 'Not connected Peer(s):',
-            //              content: div,
-            //              icon: 'warning',
-            //              timer: 5000,
-            //            });
           }
-          // close table and container
-          //          str += '</table></container>';
           str += '</table>';
         });
         elementstr += '</div>';
@@ -1115,22 +870,26 @@ function divpeerinfo(node) {
 //    '/info'));
 // document.body.appendChild(connectgoshimmer('goshimmer2',
 //    '/autopeering/neighbors'));
+document.body.appendChild(connectcpt2('iota',
+    'info'));
 document.body.appendChild(connectcpt2('cpt2',
     'info'));
-document.body.appendChild(divnodeinfoHline('iota'));
+// document.body.appendChild(divnodeinfoHline('iota'));
 // document.body.appendChild(divnodeinfoHline('iota2'));
 // document.body.appendChild(divpeerinfo('iota2'));
 document.body.appendChild(divnodeinfoHline('hornet'));
 document.body.appendChild(connectgoshimmer('goshimmer',
     '/info'));
-document.body.appendChild(divpeerinfo('iota'));
+// document.body.appendChild(divpeerinfo('iota'));
+document.body.appendChild(connectcpt2('iota',
+    'peers'));
+document.body.appendChild(connectcpt2('cpt2',
+    'peers'));
 document.body.appendChild(divpeerinfo('hornet'));
 // document.body.appendChild(divnodeinfoHline('comnet'));
 // document.body.appendChild(divpeerinfo('comnet'));
 document.body.appendChild(connectgoshimmer('goshimmer',
     '/autopeering/neighbors'));
-document.body.appendChild(connectcpt2('cpt2',
-    'peers'));
 // document.body.appendChild(divnodeinfo('iota'));
 // document.body.appendChild(divnodeinfo('iota2'));
 // const nodediv1 = document.getElementById('nodeinfo_iota');
@@ -1144,43 +903,45 @@ setInterval(function() {
 //  const nodediv1 = document.getElementById('nodeinfo_iota');
 //  const nodediv2 = document.getElementById('nodeinfo_iota2');
 //  const nodedivh0 = document.getElementById('comnet_tokens_XeeVee');
+  const nodedivh1 = document.getElementById('nodeinfo_h_iota');
   const nodedivh6 = document.getElementById('nodeinfo_h_cpt2');
+  const nodedivh3 = document.getElementById('nodeinfo_h_hornet');
   const nodedivh5 = document.getElementById('nodeinfo_h_goshimmer');
   //  const nodedivh6 = document.getElementById('nodeinfo_h_goshimmer2');
-  const nodedivh1 = document.getElementById('nodeinfo_h_iota');
   //  const nodedivh2 = document.getElementById('nodeinfo_h_iota2');
-  const nodedivh3 = document.getElementById('nodeinfo_h_hornet');
   // const nodedivh4 = document.getElementById('nodeinfo_h_comnet');
   //  const olddiv2 = document.getElementById('nodeinfo');
   //  const olddiv3 = document.getElementById('nodeinfo2');
+  const peerdiv1 = document.getElementById('peerinfo_iota');
+  const peerdiv6 = document.getElementById('peerinfo_cpt2');
+  const peerdiv3 = document.getElementById('peerinfo_hornet');
   const peerdiv5 = document.getElementById('peerinfo_goshimmer');
   //  const peerdiv6 = document.getElementById('peerinfo_goshimmer2');
-  const peerdiv1 = document.getElementById('peerinfo_iota');
   //  const peerdiv2 = document.getElementById('peerinfo_iota2');
-  const peerdiv3 = document.getElementById('peerinfo_hornet');
   // const peerdiv4 = document.getElementById('peerinfo_comnet');
-  const peerdiv6 = document.getElementById('peerinfo_cpt2');
   // document.body.replaceChild(comnetAdres(), nodedivh0);
   //  document.body.replaceChild(connectgoshimmer('goshimmer2',
   //      '/info'), nodedivh6);
   //  document.body.replaceChild(connectgoshimmer('goshimmer2',
   //      '/autopeering/neighbors'), peerdiv6);
+  document.body.replaceChild(connectcpt2('iota',
+      'info'), nodedivh1);
   document.body.replaceChild(connectcpt2('cpt2',
       'info'), nodedivh6);
-  document.body.replaceChild(divnodeinfoHline('iota'), nodedivh1);
   document.body.replaceChild(divnodeinfoHline('hornet'), nodedivh3);
   document.body.replaceChild(connectgoshimmer('goshimmer',
       '/info'), nodedivh5);
   //  document.body.replaceChild(divnodeinfoHline('iota2'), nodedivh2);
   //  document.body.replaceChild(divpeerinfo('iota2'), peerdiv2);
-  document.body.replaceChild(divpeerinfo('iota'), peerdiv1);
-  document.body.replaceChild(divpeerinfo('hornet'), peerdiv3);
-  // document.body.replaceChild(divnodeinfoHline('comnet'), nodedivh4);
-  // document.body.replaceChild(divpeerinfo('comnet'), peerdiv4);
-  document.body.replaceChild(connectgoshimmer('goshimmer',
-      '/autopeering/neighbors'), peerdiv5);
+  document.body.replaceChild(connectcpt2('iota',
+      'peers'), peerdiv1);
   document.body.replaceChild(connectcpt2('cpt2',
       'peers'), peerdiv6);
+  // document.body.replaceChild(divnodeinfoHline('comnet'), nodedivh4);
+  // document.body.replaceChild(divpeerinfo('comnet'), peerdiv4);
+  document.body.replaceChild(divpeerinfo('hornet'), peerdiv3);
+  document.body.replaceChild(connectgoshimmer('goshimmer',
+      '/autopeering/neighbors'), peerdiv5);
   //  document.body.replaceChild(divnodeinfo('iota'), nodediv1);
   //  document.body.replaceChild(divnodeinfo('iota2'), nodediv2);
   //  document.body.replaceChild(divnodeinfo(), olddiv2);

@@ -1,6 +1,6 @@
 # if you're doing anything beyond your local machine, please pin this to a specific version at https://hub.docker.com/_/node/
 # FROM node:8-alpine also works here for a smaller image
-FROM node:14-alpine
+FROM node:14
 
 # set our node environment, either development or production
 # defaults to production, compose overrides this to development on build and run
@@ -17,8 +17,8 @@ ENV NODE_ENV $NODE_ENV
 # you'll likely want the latest npm, regardless of node version, for speed and fixes
 # but pin this version for the best stability
 #RUN npm i npm@latest -g
-RUN apk add --no-cache --virtual .gyp python make g++ \
-    && npm install npm@latest -g
+#RUN apk add --no-cache --virtual .gyp python make g++ curl libc6-compat && npm install npm@latest -g && npm i -g neon-cli
+RUN apt install -y python curl git make gcc g++ openssl libssl-dev && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && apt update && apt install -y libclang-dev && npm install npm@latest -g && npm i -g neon-cli
 # && apk del .gyp
 
 # install pm2 for DEV-version
@@ -29,14 +29,31 @@ RUN apk add --no-cache --virtual .gyp python make g++ \
 
 # install dependencies first, in a different location for easier app bind mounting for local development
 # due to default /opt permissions we have to create the dir with root and change perms
-RUN mkdir /opt/node_app && chown node:node /opt/node_app
+RUN mkdir /opt/node_app \
+  && mkdir /opt/node_app/node_modules \
+  && mkdir /opt/node_app/node_modules/.bin \
+  && mkdir /opt/node_app/node_modules/@iota \
+  && mkdir /opt/node_app/node_modules/@iota/client \
+  && mkdir /opt/node_app/node_modules/iota-core \
+  && mkdir /usr/local/lib/node_modules/@iota \
+  && chown -R node:node /opt/node_app \
+  && chown -R node:node /usr/local/lib/node_modules/@iota
 WORKDIR /opt/node_app
+
 
 # the official node image provides an unprivileged user as a security best practice
 # but we have to manually enable it. We put it here so npm installs dependencies as the same
 # user who runs the app. 
 # https://github.com/nodejs/docker-node/blob/master/docs/BestPractices.md#non-root-user
 USER node
+
+# Install Rust and Cargo
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable
+# RUN source $HOME/.cargo/env
+ENV PATH /home/node/.cargo/bin:/opt/node_app/node_modules/.bin:$PATH 
+RUN env && ls /opt/node_app/node_modules/.bin && rustup install stable
+
+
 #COPY package.json and snyk
 COPY docker-package.json ./package.json
 COPY .snyk ./
@@ -44,16 +61,28 @@ COPY .snyk ./
 # Install DEV-packages
 #RUN npm install webpack webpack-dev-server webpack-cli style-loader file-loader csv-loader html-webpack-plugin clean-webpack-plugin eslint eslint-loader --save-dev
 
-# Run normal install
-RUN npm install --no-optional && npm cache clean --force && npm ls
+# Fetch wallet.rs for nodejs-binding and prepare for using @iota/wallet
+RUN git clone https://github.com/iotaledger/wallet.rs.git
+WORKDIR /opt/node_app/wallet.rs/bindings/nodejs
+RUN npm i && npm run build:neon && npm ln
+
+# Fetch iota.rs for nodejs-binding and prepare for using @iota/client
+WORKDIR /opt/node_app
+RUN git clone https://github.com/iotaledger/iota.rs.git
+WORKDIR /opt/node_app/iota.rs/bindings/nodejs
+RUN npm i && npm run build:neon && npm ln
+
+# Run normal install, link @iota/client first
+WORKDIR /opt/node_app
+RUN npm ln @iota/client && npm install && npm ls
+#RUN npm install --no-optional && npm cache clean --force && npm ls
 #RUN npm install && npm cache clean --force && npm ls
-ENV PATH /opt/node_app/node_modules/.bin:$PATH
 
 # check every 30s to ensure this service returns HTTP 200
 #HEALTHCHECK --interval=30s CMD node healthcheck.js
 
 # copy in our source code last, as it changes the most
-WORKDIR /opt/node_app
+# WORKDIR /opt/node_app
 # COPY . .
 
 # Copy webpack config files

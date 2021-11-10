@@ -15,15 +15,20 @@ module.exports = {
   },
   devtool: 'inline-source-map',
   devServer: {
-    contentBase: path.join(__dirname, 'dist'),
+    // contentBase: path.join(__dirname, 'dist'),
     compress: true,
     host: '0.0.0.0',
     port: 9876,
-    disableHostCheck: true,
+    // disableHostCheck: true,
     historyApiFallback: true,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+      "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
+    },
     proxy: {
       '/api': {
-      target: 'http://192.168.178.12:14265',
+      target: 'http://192.168.178.12:14267',
       secure: false
       }
     }
