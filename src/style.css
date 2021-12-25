@@ -17,6 +17,10 @@
   color: white;
   font-family: 'Titillium Web', sans-serif;
 }
+.nodeinfo_STATIC {
+  color: lightblue;
+  font-family: 'Titillium Web', sans-serif;
+}
 .iota_address {
   color: white;
   font-family: 'Titillium Web', sans-serif;
@@ -39,4 +43,50 @@
     border: 1px solid green;
     overflow: hidden;  /* "overflow: auto;" works just as well instead */
     width:100%;        /* Helps older versions of IE */
+}
+.mightOverflow {
+ overflow: hidden;
+ text-overflow: ellipsis;
+ white-space: nowrap;
+}
+.table_STATIC{
+ table-layout: auto;
+}
+body {
+  padding: 14px;
+  text-align: center;
+}
+
+table {
+  width: 100%;
+  margin: 20px auto;
+  table-layout: auto;
+  width: 1350px;
+  contain: strict; 
+}
+
+.fixed {
+  table-layout: fixed;
+  width: 1350px;
+  contain: strict; 
+}
+
+table,
+td,
+th {
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 10px;
+  border: solid 1px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.w {
+  width: 200px;
 }

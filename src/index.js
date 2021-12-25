@@ -19,13 +19,15 @@ import {composeAPI} from '@iota/core';
 // const {SingleNodeClient} = require('@iota/iota.js');
 import {SingleNodeClient} from '@iota/iota.js';
 
+// SMR-event: https://xeevee.ddns.net/api/plugins/participation/events/f6dbdad416e0470042d3fe429eb0e91683ba171279bce01be6d1d35a9909a981/status
 /**
  * Example for use of new lib iota.js
  */
 async function run() {
-  const client = new SingleNodeClient('https://chrysalis-nodes.iota.org');
+  const client = new SingleNodeClient('https://xeevee.ddns.net');
   const info = await client.info();
-  console.log('Node Info');
+  console.log('Node URL: https://xeevee.ddns.net');
+  console.log('\tNode Info');
   console.log('\tName:', info.name);
   console.log('\tVersion:', info.version);
   console.log('\tIs Healthy:', info.isHealthy);
@@ -160,7 +162,8 @@ function createprovider(provider) {
     if (provider == 'goshimmer') {
       providerstr += 'http://' +
         process.env.IRI_NODE_IP_5 + ':' +
-        process.env.IRI_NODE_PORT_5;
+        process.env.IRI_NODE_PORT_5 +
+        '/';
     };
     if (provider == 'goshimmer2') {
       providerstr += '//xeevee.net:18080';
@@ -172,6 +175,13 @@ function createprovider(provider) {
         process.env.IRI_NODE_IP_3 + ':' +
         process.env.IRI_NODE_PORT_3 +
         '/api/v1/';
+    };
+    if (provider == 'plugins') {
+      providerstr += 'https://' +
+        process.env.IRI_NODE_IP_6 +
+        // ':' +
+        // process.env.IRI_NODE_PORT_6 +
+        '/api/plugins/';
     };
   } else {
     providerstr += '/api';
@@ -217,7 +227,8 @@ function iterate(data, type, strn, headern, detailn) {
                   end;
               }
               str += '</tr><tr>';
-              start = '<td>';
+              start = '<td class="mightOverflow"' +
+                'data-toggle="tooltip" data-placement="auto">';
               end = '</td>';
               for (let i = 0; i < headers.length; i++) {
                 str += start;
@@ -265,7 +276,7 @@ function iterate(data, type, strn, headern, detailn) {
                 Object.keys(entry[1]).length +
                 // map.size +
                 '>' + camelCaseToTitleCase(entry[0]) +
-                ' (' + Object.keys(entry[1]).length + ')' +
+                ' (' + Object.keys(entry[1]).length + ' Settings)' +
                 // ' (' + map.size + ')' +
                 '</th></tr><tr>';
               const nestedmap = new Map(Object.entries(entry[1]));
@@ -334,26 +345,88 @@ function connectcpt2(provider, type) {
   // Chrysalis pt 2 info curl -vv http://192.168.178.100:14265/api/v1/info|jq
   // Chrysalis pt 2 peers curl -vv http://192.168.178.100:14265/api/v1/peers|jq
   // using pmij.env
-  const providerstr = createprovider(provider)+type;
   const element = document.createElement('container');
   const mainbech32adr =
     'iota1qp853z2qtu386vkzdef4a36l7wl'+
     '8wvcln9q24h0n5g0hcccyan9pc8fqz03';
   const balanceprovider = 'http://192.168.178.12:14267/api/v1/addresses/';
+  let providerstr = '';
+  let staked = 0;
+  let rewarded = 0;
   let saldo = 0;
   let elementstr = '<table class="table-striped table-hover'+
     ' table-bordered table-responsive" '+
+    ' table-dark" '+
     'style="text-align:center">';
   elementstr += '<tr>';
   elementstr += '<th>Node name</th>';
-  //  elementstr += '<th>Node ID</th>';
-  //  elementstr += '<th>Public Key</th>';
   elementstr += '<th>Node API</th>';
   elementstr += '</tr><tr>';
   elementstr += '<td>'+provider+'</td>';
-  elementstr += '<td>'+providerstr+'</td>';
-  elementstr += '</tr><tr>';
+  let events = {};
+  let response2 = {};
+  switch (provider) {
+    case 'plugins':
+      providerstr = createprovider(provider);
+      elementstr += '<td>'+providerstr+'</td>';
+      elementstr += '</tr><tr>';
+      (async () => {
+        try {
+          const response1 = await fetch(providerstr+'participation/events');
+          if (response1.ok) {
+            // const events = new Map(Object.entries(await response1.json()));
+            events = await response1.json();
+            // elementstr += iterate(events.data, 'header', '', [], []);
+            response2 = await fetch(createprovider(provider)+
+             'participation/events/'+
+              events.data.eventIds[0]+'/status');
+            if (response2.ok) {
+              const jsonValue = await response2.json();
+              console.log('Fetched jsonValue Event: ' + jsonValue);
+              staked += jsonValue.data.staking.staked;
+              rewarded += jsonValue.data.staking.rewarded;
+              elementstr +=
+                '<div>SMR Event Iota tokens staked: '+
+                formatIotas(staked)+'</div>'+
+                '<div>SMR Event SMR tokens rewarded: '+
+                formatIotas(rewarded)+'</div>';
+            } else {
+              console.log('Fetch Event error: ' + response2.status);
+            }
+          } else {
+            console.log('Fetch Event error: ' + response1.status);
+          }
+        } catch (e) {
+          console.log('Catched fetch error: ' + e);
+        }
+      })();
+      (async () => {
+        try {
+          // const response2 = await fetch(providerstr+
+          //  'participation/events/'+
+          //  events.data.eventIds[0]+'/status');
+        } catch (e) {
+          console.log('Catched fetch error: ' + e);
+        }
+      })();
+    default:
+      providerstr = createprovider(provider)+type;
+      elementstr += '<td>'+providerstr+'</td>';
+      elementstr += '</tr><tr>';
+  }
+  // const eventprovider = 'https://xeevee.ddns.net'+
+  //  '/api/plugins/participation/events/';
+  // const smrevent = 'f6dbdad416e0470042d3fe429eb0e'+
+  //  '91683ba171279bce01be6d1d35a9909a981';
+  //  elementstr += '<th>Node ID</th>';
+  //  elementstr += '<th>Public Key</th>';
   switch (type) {
+    case 'participation/events':
+      element.classList.add('nodeinfo');
+      element.id = 'cpt2_events_info';
+    case 'participation/event/status':
+      element.classList.add('nodeinfo');
+      element.id = 'cpt2_events_status';
     case 'info':
       element.classList.add('nodeinfo');
       element.id = 'nodeinfo_h_' + provider;
@@ -363,18 +436,18 @@ function connectcpt2(provider, type) {
       /* Fetch method Chrysalis */
       (async () => {
         try {
-          const response = await fetch(balanceprovider+mainbech32adr);
-          if (response.ok) {
-            const jsonmap = new Map(Object.entries(await response.json()));
-            console.log('Fetched: ' + jsonmap);
-            saldo += jsonmap.get('data').balance;
+          const response3 = await fetch(balanceprovider+mainbech32adr);
+          if (response3.ok) {
+            const jsonValue = await response3.json();
+            console.log('Fetched jsonValue Balance: ' + jsonValue);
+            saldo += jsonValue.data.balance;
             elementstr +=
               '<div>Mainnet tokens on address from 1 seed: '+
               formatIotas(saldo)+'</div>';
-            elementstr += '<div>' + iterate(jsonmap, 'header', '', [], []);
-            elementstr += '</div>';
+            // elementstr += '<div>' + iterate(jsonmap, 'header', '', [], []);
+            // elementstr += '</div>';
           } else {
-            console.log('Fetch error: ' + response.status);
+            console.log('Fetch Balance error: ' + response3.status);
           }
         } catch (e) {
           console.log('Catched fetch error: ' + e);
@@ -392,10 +465,13 @@ function connectcpt2(provider, type) {
       const response = await fetch(providerstr);
       if (response.ok) {
         // const json = await response.json();
+        // const jsonValue = await response.body.json();
         const jsonmap = new Map(Object.entries(await response.json()));
         //        let x;
         //        let y;
-        console.log('Fetched: ' + jsonmap);
+        console.log('Fetched jsonValue nodeInfo or nodePeers: '+
+        //  providerstr + json+
+          providerstr + jsonmap);
         //        for (x in json) {
         //          if ({}.hasOwnProperty.call(json, x)) {
         //            elementstr += '<th>'+
@@ -405,6 +481,7 @@ function connectcpt2(provider, type) {
         //        elementstr += '<td>'+json.identityID+'</td>';
         //        elementstr += '<td>'+json.publicKey+'</td>';
         // elementstr += '<pre>' + JSON.stringify(json) + '</pre>';
+        // elementstr += iterate(jsonValue, 'header', '', [], []);
         elementstr += iterate(jsonmap, 'header', '', [], []);
         //        for (y in json) {
         //          if ({}.hasOwnProperty.call(json, y)) {
@@ -870,6 +947,10 @@ function divpeerinfo(node) {
 //    '/info'));
 // document.body.appendChild(connectgoshimmer('goshimmer2',
 //    '/autopeering/neighbors'));
+document.body.appendChild(connectcpt2('plugins',
+    'participation/events'));
+document.body.appendChild(connectcpt2('plugins',
+    'participation/event/status'));
 document.body.appendChild(connectcpt2('iota',
     'info'));
 document.body.appendChild(connectcpt2('cpt2',
@@ -879,7 +960,7 @@ document.body.appendChild(connectcpt2('cpt2',
 // document.body.appendChild(divpeerinfo('iota2'));
 document.body.appendChild(divnodeinfoHline('hornet'));
 document.body.appendChild(connectgoshimmer('goshimmer',
-    '/info'));
+    'info'));
 // document.body.appendChild(divpeerinfo('iota'));
 document.body.appendChild(connectcpt2('iota',
     'peers'));
@@ -889,7 +970,7 @@ document.body.appendChild(divpeerinfo('hornet'));
 // document.body.appendChild(divnodeinfoHline('comnet'));
 // document.body.appendChild(divpeerinfo('comnet'));
 document.body.appendChild(connectgoshimmer('goshimmer',
-    '/autopeering/neighbors'));
+    'autopeering/neighbors'));
 // document.body.appendChild(divnodeinfo('iota'));
 // document.body.appendChild(divnodeinfo('iota2'));
 // const nodediv1 = document.getElementById('nodeinfo_iota');
@@ -903,6 +984,8 @@ setInterval(function() {
 //  const nodediv1 = document.getElementById('nodeinfo_iota');
 //  const nodediv2 = document.getElementById('nodeinfo_iota2');
 //  const nodedivh0 = document.getElementById('comnet_tokens_XeeVee');
+  const nodedive0 = document.getElementById('cpt2_events_info');
+  const nodedive1 = document.getElementById('cpt2_events_status');
   const nodedivh1 = document.getElementById('nodeinfo_h_iota');
   const nodedivh6 = document.getElementById('nodeinfo_h_cpt2');
   const nodedivh3 = document.getElementById('nodeinfo_h_hornet');
@@ -924,13 +1007,17 @@ setInterval(function() {
   //      '/info'), nodedivh6);
   //  document.body.replaceChild(connectgoshimmer('goshimmer2',
   //      '/autopeering/neighbors'), peerdiv6);
+  document.body.replaceChild(connectcpt2('plugins',
+      'participation/events'), nodedive0);
+  document.body.replaceChild(connectcpt2('pugins',
+      'participation/event/status'), nodedive1);
   document.body.replaceChild(connectcpt2('iota',
       'info'), nodedivh1);
   document.body.replaceChild(connectcpt2('cpt2',
       'info'), nodedivh6);
   document.body.replaceChild(divnodeinfoHline('hornet'), nodedivh3);
   document.body.replaceChild(connectgoshimmer('goshimmer',
-      '/info'), nodedivh5);
+      'info'), nodedivh5);
   //  document.body.replaceChild(divnodeinfoHline('iota2'), nodedivh2);
   //  document.body.replaceChild(divpeerinfo('iota2'), peerdiv2);
   document.body.replaceChild(connectcpt2('iota',
@@ -941,7 +1028,38 @@ setInterval(function() {
   // document.body.replaceChild(divpeerinfo('comnet'), peerdiv4);
   document.body.replaceChild(divpeerinfo('hornet'), peerdiv3);
   document.body.replaceChild(connectgoshimmer('goshimmer',
-      '/autopeering/neighbors'), peerdiv5);
+      'autopeering/neighbors'), peerdiv5);
+  /**
+  * Show/ hide Tooltip
+  * @param {str} options - fiddle around if you want
+  */
+  $.fn.tooltipOnOverflow = function(options) {
+    // eslint-disable-next-line
+    $(this).on('mouseenter', function() {
+      // eslint-disable-next-line
+      if (this.offsetWidth < this.scrollWidth) {
+        options = options || {placement: 'auto'};
+        /* @this - fiddle around if you want */
+        // eslint-disable-next-line
+        options.title = $(this).text();
+        // eslint-disable-next-line
+        $(this).tooltip(options);
+        // eslint-disable-next-line
+        $(this).tooltip('show');
+      } else {
+        // eslint-disable-next-line
+        if ($(this).data('bs.tooltip')) {
+          $tooltip.tooltip('hide');
+          $tooltip.removeData('bs.tooltip');
+        }
+      }
+    });
+  };
+  // eslint-disable-next-line
+  $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+
   //  document.body.replaceChild(divnodeinfo('iota'), nodediv1);
   //  document.body.replaceChild(divnodeinfo('iota2'), nodediv2);
   //  document.body.replaceChild(divnodeinfo(), olddiv2);

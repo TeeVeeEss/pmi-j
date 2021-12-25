@@ -4,14 +4,211 @@
   <meta charset="utf-8">
   <title> <%= htmlWebpackPlugin.options.title %> </title>
   <meta name="viewport" content="width=device-width, initial-scale=1"> 
-  <!-- link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.4.1/darkly/bootstrap.min.css" integrity="sha384-rCA2D+D9QXuP2TomtQwd+uP50EHjpafN+wruul0sXZzX/Da7Txn4tB9aLMZV4DZm" crossorigin="anonymous">
+  <!--link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"-->
+  <link rel="stylesheet" type="text/css" href="https://bootswatch.com/5/darkly/bootstrap.min.css">
+  <!--link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.4.1/darkly/bootstrap.min.css" integrity="sha384-rCA2D+D9QXuP2TomtQwd+uP50EHjpafN+wruul0sXZzX/Da7Txn4tB9aLMZV4DZm" crossorigin="anonymous"-->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <!--script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script-->
+  <!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script-->
+  <!--link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"-->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </head>
-<body>
-<!--  <div class="jumbotron text-center" style="margin-bottom:0">
+<body> 
+<h2>Using the <code>table-layout</code> property</h2>
+
+<table id="t">
+  <thead>
+    <tr>
+      <th class="w">Example text</th>
+      <th>Example text</th>
+      <th>Here is a longer piece of text</th>
+      <th>Example text</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="mightOverflow" data-toggle="tooltip">A much longer piece of content for demo purposes. More goes here.</td>
+      <td>Example text</td>
+      <td>Example text</td>
+      <td>Example text</td>
+    </tr>
+    <tr>
+      <td>Example text</td>
+      <td>Example text</td>
+      <td>Example text</td>
+      <td>Example text</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td>Example text</td>
+      <td>Example text</td>
+      <td>Example text</td>
+      <td>Example text</td>
+    </tr>
+  </tfoot>
+</table>
+
+<button class="tl"><b>Toggle table-layout: fixed</b></button>
+
+<container class="nodeinfo_STATIC" id="nodeinfo_h_goshimmer_STATIC">
+<p>--- Màrrria ----</p>
+<table style="text-align:left" id="table_nodeinfo_h_goshimmer_STATIC" class="table_STATIC">
+<tbody>
+<tr>
+  <th>Node name</th><th>Node API</th>
+</tr>
+<tr>
+  <td>goshimmer</td><td>http://192.168.178.100:8080/info</td>
+</tr>
+<tr>
+</tr>
+<tr>
+  <th>Version</th><th>Network Version</th>
+</tr>
+<tr>
+  <td class="mightOverflow">v0.7.7</td><td class="mightOverflow">40</td>
+</tr>
+<tr>
+</tr>
+<tr>
+  <th colspan="3">Tangle Time (3 Settings)</th>
+</tr>
+<tr>
+  <th>Message ID</th><th>Time</th><th>Synced</th>
+</tr>
+<tr>
+  <td>38bJgqf2YHYs6PgFnDKFi8qSmpczfUJZXkEnK9Gbborc</td>
+  <td>Sun Oct 24 2021 12:31:58 GMT+0200 (Midden-Europese zomertijd)</td>
+  <td>true</td>
+</tr>
+<tr>
+  <th>Identity ID</th><th>Identity ID Short</th><th>Public Key</th><th>Solid Message Count</th><th>Total Message Count</th>
+</tr>
+<tr>
+  <td class="mightOverflow">AwsquobT57CYWaaHqtiGayfZwPtvM9Xbea5ornhwbro9</td>
+  <td class="mightOverflow">RifYaNfvVHu</td>
+  <td class="mightOverflow">75g6r4tqGZhrgpDYZyZxVje1Qo54ezFYkCw94ELTLhPs</td>
+  <td class="mightOverflow">6100580</td>
+  <td class="mightOverflow">6100597</td>
+</tr>
+<tr>
+</tr>
+<tr>
+  <th class="fixed">Enabled Plugins (41 Settings)</th>
+</tr>
+<tr>
+ <td 
+   class="mightOverflow" data-toggle="tooltip" data-placement="auto" 
+   title="AnalysisClient,AutoPeering,Banner,CLI,Chat,Clock,Config,Consensus,DRNG,Dashboard,Database,Gossip,GracefulShutdown,Logger,Mana,ManaRefresher,ManualPeering,MessageLayer,Metrics,NetworkDelay,POW,Peer,Profiling,Prometheus,RemoteLog,Snapshot,Spammer,TXStream,WebAPI,WebAPIAutopeeringEndpoint,WebAPIDRNGEndpoint,WebAPIDataEndpoint,WebAPIFaucetEndpoint,WebAPIHealthzEndpoint,WebAPIInfoEndpoint,WebAPILedgerstateEndpoint,WebAPIManaEndpoint,WebAPIMessageEndpoint,WebAPIToolsDRNGEndpoint,WebAPIToolsMessageEndpoint,WebAPIWeightProviderEndpoint"
+   >
+   AnalysisClient,AutoPeering,Banner,CLI,Chat,Clock,Config,Consensus,DRNG,Dashboard,Database,Gossip,GracefulShutdown,Logger,Mana,ManaRefresher,ManualPeering,MessageLayer,Metrics,NetworkDelay,POW,Peer,Profiling,Prometheus,RemoteLog,Snapshot,Spammer,TXStream,WebAPI,WebAPIAutopeeringEndpoint,WebAPIDRNGEndpoint,WebAPIDataEndpoint,WebAPIFaucetEndpoint,WebAPIHealthzEndpoint,WebAPIInfoEndpoint,WebAPILedgerstateEndpoint,WebAPIManaEndpoint,WebAPIMessageEndpoint,WebAPIToolsDRNGEndpoint,WebAPIToolsMessageEndpoint,WebAPIWeightProviderEndpoint
+   </td>
+</tr>
+<tr>
+</tr>
+<tr>
+  <th>Disabled Plugins (7 Settings)</th>
+</tr>
+<tr>
+  <td class="mightOverflow" data-toggle="tooltip" data-placement="auto" title="Activity">
+      Activity,AnalysisDashboard,AnalysisServer,Faucet,ManaEventLogger,PortCheck,RemoteLogMetrics
+  </td>
+</tr>
+<tr>
+</tr>
+<tr>
+  <th colspan="4">Mana (4 Settings)</th>
+</tr>
+<tr>
+  <th>Access</th>
+  <th>Access Timestamp</th>
+  <th>Consensus</th>
+  <th>Consensus Timestamp</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td>2021-10-24T12:32:00.120083524+02:00</td>
+  <td>12205107</td>
+  <td>2021-10-24T12:32:00.120100011+02:00</td>
+</tr>
+<tr>
+ <th>Mana Delegation Address</th>
+ <th>Mana decay</th>
+</tr>
+<tr>
+  <td class="mightOverflow">1ACh9jPZeHhdvvoRSmymfJ3HLmF5Xkq9USXcHuXjnU2t9</td>
+  <td class="mightOverflow">0.00003209</td>
+</tr>
+<tr>
+</tr>
+<tr>
+  <th colspan="3">Scheduler (3 Settings)</th>
+</tr>
+<tr>
+</tr>
+<tr>
+  <th>Running</th>
+  <th>Rate</th>
+</tr>
+<tr>
+  <td class="mightOverflow">true</td>
+  <td class="mightOverflow">5ms</td>
+</tr>
+<tr>
+</tr>
+<tr>
+  <th colspan="0">Node Queue Sizes (0 Settings)</th>
+</tr>
+<tr>
+</tr>
+<tr>
+</tr>
+<tr>
+</tr>
+<tr>
+</tr>
+</tbody>
+</table>
+</container>
+<script>
+  $.fn.tooltipOnOverflow = function(options) {
+    // eslint-disable-next-line
+    $(this).on('mouseenter', function() {
+      // eslint-disable-next-line
+      if (this.offsetWidth < this.scrollWidth) {
+        options = options || {placement: 'auto'};
+        /* @this - fiddle around if you want */
+        // eslint-disable-next-line
+        options.title = $(this).text();
+        // eslint-disable-next-line
+        $(this).tooltip(options);
+        // eslint-disable-next-line
+        $(this).tooltip('show');
+      } else {
+        // eslint-disable-next-line
+        if ($(this).data('bs.tooltip')) {
+          $tooltip.tooltip('hide');
+          $tooltip.removeData('bs.tooltip');
+        }
+      }
+    });
+  };
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip();   
+});
+</script>
+<script>
+var tlBtn = document.querySelector('.tl'),
+    tbl = document.getElementById('table_nodeinfo_h_goshimmer_STATIC');
+
+tlBtn.addEventListener('click', function() {
+  tbl.classList.toggle('fixed');
+}, false);
+</script>
+
+<!-- <div class="jumbotron 
+text-center" style="margin-bottom:0">
     <h2>ES6 Peer manager for your IRI node</h2>
     <p>Resize this responsive page to see the effect!</p> 
     <!-- IPv6-test.com widget BEGIN
