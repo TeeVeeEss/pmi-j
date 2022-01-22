@@ -20,5 +20,13 @@ module.exports = {
     'vue',
   ],
   'rules': {
+    'max-len': ['error', {
+      code: 120,
+      ignoreComments: true,
+      ignoreTrailingComments: true,
+      ignoreUrls: true,
+      ignoreStrings: true,
+      ignoreTemplateLiterals: true,
+    }],
   },
 };

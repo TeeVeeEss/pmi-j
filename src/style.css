@@ -21,6 +21,10 @@
   color: lightblue;
   font-family: 'Titillium Web', sans-serif;
 }
+.eventinfo {
+  color: lightblue;
+  font-family: 'Titillium Web', sans-serif;
+}
 .iota_address {
   color: white;
   font-family: 'Titillium Web', sans-serif;
@@ -57,13 +61,13 @@ body {
   text-align: center;
 }
 
-table {
+/* table {
   width: 100%;
   margin: 20px auto;
   table-layout: auto;
-  width: 1350px;
+  width: auto;
   contain: strict; 
-}
+} */
 
 .fixed {
   table-layout: fixed;
@@ -71,7 +75,7 @@ table {
   contain: strict; 
 }
 
-table,
+/* table,
 td,
 th {
   border-collapse: collapse;
@@ -79,7 +83,7 @@ th {
 
 th,
 td {
-  padding: 10px;
+  padding: 5px;
   border: solid 1px;
   text-align: center;
   overflow: hidden;
@@ -89,4 +93,4 @@ td {
 
 .w {
   width: 200px;
-}
+} */

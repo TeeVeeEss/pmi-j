@@ -65,3 +65,4 @@ typings/
 # Added by cargo
 
 /target
+pmij.env

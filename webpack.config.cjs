@@ -9,6 +9,9 @@ module.exports = {
   entry: {
     app: './src/index.js',
   },
+  stats: {
+    builtAt: true,
+  },
   watchOptions: {
     aggregateTimeout: 600,
     poll: 3000
@@ -45,6 +48,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: 'IOTA ES6 Peer manager DEV-version',
       template: './src/index.html',
+      favicon: "./src/favicon.ico",
       inject: true,
       minify: {
         removeComments: true,
