@@ -42,7 +42,7 @@
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
     "qs": "^6.10.1",
-    "snyk": "^1.812.0",
+    "snyk": "^1.813.0",
     "socket.io": "^4.4.0",
     "stream-browserify": "^3.0.0",
     "sweetalert": "^2.1.2",
