@@ -71,6 +71,9 @@ import swal from 'sweetalert';
  * @return {str} formatted propertie.
  */
 function camelCaseToTitleCase(inCamelCaseString) {
+  if (typeof inCamelCaseString == 'undefined') {
+    return inCamelCaseString;
+  }
   const result = inCamelCaseString
   // "To Get YourGEDIn TimeASong About The26ABCs IsOf The Essence
   // ButAPersonalIDCard For User456In Room26AContainingABC26Times IsNot AsEasy
@@ -226,11 +229,13 @@ function iterate(data, type, strn, headern, detailn) {
   switch (typeofdata) {
     case 'object':
       for (const entry of data) {
-        if (entry[1] == null) {
-          entry[1] = '(null)';
-        }
-        const typeofvalue = typeof entry[1];
+        const typeofvalue = (entry[1] === entry[1] ? typeof entry[1] : 'undefined');
         switch (typeofvalue) {
+          case 'undefined':
+            // Unknown value or something strange found in json...
+            headers.push('Unknown Entry[0]');
+            details.push('Undefined Entry[1]');
+            break;
           case 'object':
             // Print all founded headers and details
             if (headers.length > 0) {
@@ -1025,21 +1030,23 @@ elementstr += '<td>'+'Apr2011 vBox'+'</td>';
 elementstr += '<td>'+'https://xeevee.ddns.net/api/plugins/participation'+
   '</td>';
 elementstr += '</tr>';
-const {eventprovider, events, smrevent, asmbevent, parttokens, iotatokens, nodeinfo, nodepeers} = tobeFetched();
+// const {eventprovider, events, smrevent, asmbevent, parttokens, iotatokens, nodeinfo, nodepeers} = tobeFetched();
+const {eventprovider, nodeinfo, nodepeers} = tobeFetched();
 /**
 * Enumerate to be fetched calls.
 * @return {str} string
 **/
 function tobeFetched() {
   const eventprovider = 'https://xeevee.ddns.net';
-  const events = '/api/plugins/participation/events';
-  const asmbevent = '/57607d9f8cefc366c3ead71f5b1d76cef1b36a07eb775158c541107951d4aecb';
-  const smrevent = '/f6dbdad416e0470042d3fe429eb0e91683ba171279bce01be6d1d35a9909a981';
-  const iotatokens = '/api/v1/addresses/iota1qp853z2qtu386vkzdef4a36l7wl8wvcln9q24h0n5g0hcccyan9pc8fqz03';
-  const parttokens = '/api/plugins/participation/addresses/iota1qp853z2qtu386vkzdef4a36l7wl8wvcln9q24h0n5g0hcccyan9pc8fqz03';
+  // const events = '/api/plugins/participation/events';
+  // const asmbevent = '/57607d9f8cefc366c3ead71f5b1d76cef1b36a07eb775158c541107951d4aecb';
+  // const smrevent = '/f6dbdad416e0470042d3fe429eb0e91683ba171279bce01be6d1d35a9909a981';
+  // const iotatokens = '/api/v1/addresses/iota1qp853z2qtu386vkzdef4a36l7wl8wvcln9q24h0n5g0hcccyan9pc8fqz03';
+  // const parttokens = '/api/plugins/participation/addresses/iota1qp853z2qtu386vkzdef4a36l7wl8wvcln9q24h0n5g0hcccyan9pc8fqz03';
   const nodeinfo = '/api/v1/info';
   const nodepeers = '/api/v1/peers';
-  return {eventprovider, events, smrevent, asmbevent, parttokens, iotatokens, nodeinfo, nodepeers};
+  // return {eventprovider, events, smrevent, asmbevent, parttokens, iotatokens, nodeinfo, nodepeers};
+  return {eventprovider, nodeinfo, nodepeers};
 }
 
 /**
@@ -1072,32 +1079,32 @@ async function myFetch(type = '') {
 * @return {str} html
 **/
 async function displayContent() {
-  const getsaldo =
-    myFetch(eventprovider+iotatokens);
-  const gettokens =
-    myFetch(eventprovider+parttokens);
-  const getevents =
-    myFetch(eventprovider+events);
-  const getasmbevent =
-    myFetch(eventprovider+events+asmbevent);
-  const getasmbstatus =
-    myFetch(eventprovider+events+asmbevent+'/status');
-  const getsmrevent =
-    myFetch(eventprovider+events+smrevent);
-  const getsmrstatus =
-    myFetch(eventprovider+events+smrevent+'/status');
+  // const getsaldo =
+  //   myFetch(eventprovider+iotatokens);
+  // const gettokens =
+  //   myFetch(eventprovider+parttokens);
+  // const getevents =
+  //   myFetch(eventprovider+events);
+  // const getasmbevent =
+  //   myFetch(eventprovider+events+asmbevent);
+  // const getasmbstatus =
+  //   myFetch(eventprovider+events+asmbevent+'/status');
+  // const getsmrevent =
+  //   myFetch(eventprovider+events+smrevent);
+  // const getsmrstatus =
+  //   myFetch(eventprovider+events+smrevent+'/status');
   const getnodeinfo =
     myFetch(eventprovider+nodeinfo);
   const getnodepeers =
     myFetch(eventprovider+nodepeers);
   const elements = await Promise.allSettled([
-    getsaldo,
-    gettokens,
-    getevents,
-    getasmbevent,
-    getasmbstatus,
-    getsmrevent,
-    getsmrstatus,
+    // getsaldo,
+    // gettokens,
+    // getevents,
+    // getasmbevent,
+    // getasmbstatus,
+    // getsmrevent,
+    // getsmrstatus,
     getnodeinfo,
     getnodepeers]);
   for (const entry of elements) {
