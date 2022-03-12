@@ -26,9 +26,9 @@
   "author": "TeeVeeEss",
   "license": "MIT",
   "dependencies": {
-    "@iota/client": "^0.2.0",
-    "@iota/core": "^1.0.0-beta.30",
-    "@iota/wallet": "0.0.6",
+    "@iota/client": "^2.2.3",
+    "@iota/iota.js": "^1.8.6",
+    "@iota/wallet": "^1.0.10",
     "async": "^3.2.0",
     "bunyan": "^1.8.14",
     "crypto-browserify": "^3.12.0",
