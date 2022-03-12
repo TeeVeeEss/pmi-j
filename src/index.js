@@ -1029,7 +1029,7 @@ elementstr += '</tr><tr>';
 elementstr += '<td>'+'Apr2011 vBox'+'</td>';
 elementstr += '<td>'+'https://xeevee.ddns.net/api/plugins/participation'+
   '</td>';
-elementstr += '</tr>';
+elementstr += '</tr><tr><th colspan="4">Peers</th></tr>';
 // const {eventprovider, events, smrevent, asmbevent, parttokens, iotatokens, nodeinfo, nodepeers} = tobeFetched();
 const {eventprovider, nodeinfo, nodepeers} = tobeFetched();
 /**
