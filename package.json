@@ -42,7 +42,7 @@
     "minimist": "^1.2.6",
     "qs": "^6.10.3",
     "socket.io": "^4.4.1",
-    "snyk": "^1.855.0",
+    "snyk": "^1.881.0",
     "stream-browserify": "^3.0.0",
     "sweetalert": "^2.1.2",
     "yargs": "^17.3.1"
