@@ -1032,6 +1032,7 @@ elementstr += '<td>'+'https://xeevee.ddns.net/api/plugins/participation'+
 elementstr += '</tr><tr><th colspan="4">Peers</th></tr>';
 // const {eventprovider, events, smrevent, asmbevent, parttokens, iotatokens, nodeinfo, nodepeers} = tobeFetched();
 const {eventprovider, nodeinfo, nodepeers} = tobeFetched();
+
 /**
 * Enumerate to be fetched calls.
 * @return {str} string
