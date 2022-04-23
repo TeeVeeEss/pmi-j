@@ -11,7 +11,7 @@
     "buildprod": "webpack --mode=production",
     "builddev": "webpack --mode=development",
     "profile": "webpack --profile --json > compilation-stats.json",
-    "snyk-protect": "snyk protect",
+    "snyk-protect": "snyk-protect",
     "prepare": "npm run snyk-protect"
   },
   "keywords": [
@@ -30,6 +30,7 @@
     "@iota/client": "^2.2.3",
     "@iota/iota.js": "^1.8.6",
     "@iota/wallet": "^1.0.16",
+    "@snyk/protect": "^1.912.0",
     "async": "^3.2.3",
     "bunyan": "^1.8.15",
     "crypto-browserify": "^3.12.0",
@@ -42,7 +43,6 @@
     "minimist": "^1.2.6",
     "qs": "^6.10.3",
     "socket.io": "^4.4.1",
-    "snyk": "^1.890.0",
     "stream-browserify": "^3.0.0",
     "sweetalert": "^2.1.2",
     "yargs": "^17.4.0"
