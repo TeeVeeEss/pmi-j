@@ -5,7 +5,6 @@ Start with:
 git clone https://github.com/TeeVeeEss/pmi-j
 cd pmi-j
 git checkout develop
-cd dist
 npm run run-dev
 ```
 Change your ip and port when needed in ``webpack.config.js`` and ``Dockerfile``.
