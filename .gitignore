@@ -60,9 +60,10 @@ typings/
 # dotenv environment variables file
 .env
 
-
-
 # Added by cargo
 
 /target
 pmij.env
+
+# vscode settings
+.vscode

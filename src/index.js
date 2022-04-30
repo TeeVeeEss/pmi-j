@@ -127,23 +127,23 @@ function camelCaseToTitleCase(inCamelCaseString) {
 }
 
 
-// /**
-//  * Show coins as human readable like G i
-//  * @param {int} total The to be converted number of coins.
-//  * @param {str} coin Indication of coin, default i
-//  * @param {int} decimals Number of decimals, default 2
-//  * total is numeric
-//  * @return {str} is smth like 3.2 Gi.
-//  */
-// function formatIotas(total, coin, decimals = 2) {
-//   if (total === 0) return '0 ' + coin;
-//   const k = 1000;
-//   const dm = decimals < 0 ? 0 : decimals;
-//   const sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
-//   const i = Math.floor(Math.log(total) / Math.log(k));
-//   return parseFloat((total / Math.pow(k, i)).toFixed(dm)) +
-//     ' ' + sizes[i] + coin;
-// }
+/**
+ * Show coins as human readable like G i
+ * @param {int} total The to be converted number of coins.
+ * @param {str} coin Indication of coin, default i
+ * @param {int} decimals Number of decimals, default 2
+ * total is numeric
+ * @return {str} is smth like 3.2 Gi.
+ */
+function formatIotas(total, coin, decimals = 2) {
+  if (total === 0) return '0 ' + coin;
+  const k = 1000;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
+  const i = Math.floor(Math.log(total) / Math.log(k));
+  return parseFloat((total / Math.pow(k, i)).toFixed(dm)) +
+    ' ' + sizes[i] + coin;
+}
 
 // /**
 //  * Create provider string to IOTA endpoint.
@@ -349,6 +349,14 @@ function iterate(data, type, strn, headern, detailn) {
   end = '</td>';
   for (let i = 0; i < headers.length; i++) {
     str += start;
+    if (headers[i].match(/staked/)) {
+      str += formatIotas(details[i], 'i');
+      continue;
+    }
+    if (headers[i].match(/rewarded/)) {
+      str += formatIotas(details[i], '');
+      continue;
+    }
     if (headers[i].match(/time/) == null) {
       str += details[i];
     } else {
@@ -1101,6 +1109,8 @@ async function displayContent() {
     myFetch(eventprovider+nodepeers);
   const getasmbevent2 =
     myFetch(eventprovider+events+asmbevent2);
+  const getasmb2status =
+    myFetch(eventprovider+events+asmbevent2+'/status');
   const elements = await Promise.allSettled([
     // getsaldo,
     // gettokens,
@@ -1109,6 +1119,7 @@ async function displayContent() {
     // getasmbstatus,
     // getsmrevent,
     // getsmrstatus,
+    getasmb2status,
     getasmbevent2,
     getnodeinfo,
     getnodepeers]);

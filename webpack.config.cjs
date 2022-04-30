@@ -31,7 +31,7 @@ module.exports = {
     },
     proxy: {
       '/api': {
-      target: 'http://192.168.178.12:14267',
+      target: 'http://192.168.50.82:14267',
       secure: false
       }
     }
