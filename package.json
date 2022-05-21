@@ -30,7 +30,7 @@
     "@iota/client": "^2.2.3",
     "@iota/iota.js": "^1.8.6",
     "@iota/wallet": "^1.0.16",
-    "@snyk/protect": "^1.913.0",
+    "@snyk/protect": "^1.914.0",
     "async": "^3.2.3",
     "bunyan": "^1.8.15",
     "crypto-browserify": "^3.12.0",
