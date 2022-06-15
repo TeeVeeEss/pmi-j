@@ -1039,7 +1039,7 @@ elementstr += '<td>'+'https://xeevee.ddns.net/api/plugins/participation'+
   '</td>';
 elementstr += '</tr><tr><th colspan="4">Peers</th></tr>';
 // const {eventprovider, events, smrevent, asmbevent, parttokens, iotatokens, nodeinfo, nodepeers} = tobeFetched();
-const {eventprovider, events, asmbevent2, nodeinfo, nodepeers} = tobeFetched();
+const {eventprovider, events, buildburn, asmbevent2, nodeinfo, nodepeers} = tobeFetched();
 
 /**
 * Enumerate to be fetched calls.
@@ -1049,6 +1049,7 @@ function tobeFetched() {
   const eventprovider = 'https://xeevee.ddns.net';
   const events = '/api/plugins/participation/events';
   const asmbevent2 = '/90ab02d8f700fcb3b31ff577416ecb105697a664738bec45b626920337a280e0';
+  const buildburn = '/c8529ff64ea191b437cd625af8b02fd0173bc94aae380ea4cc3367a651536cba';
   // const asmbevent = '/57607d9f8cefc366c3ead71f5b1d76cef1b36a07eb775158c541107951d4aecb';
   // const smrevent = '/f6dbdad416e0470042d3fe429eb0e91683ba171279bce01be6d1d35a9909a981';
   // const iotatokens = '/api/v1/addresses/iota1qp853z2qtu386vkzdef4a36l7wl8wvcln9q24h0n5g0hcccyan9pc8fqz03';
@@ -1056,7 +1057,7 @@ function tobeFetched() {
   const nodeinfo = '/api/v1/info';
   const nodepeers = '/api/v1/peers';
   // return {eventprovider, events, smrevent, asmbevent, parttokens, iotatokens, nodeinfo, nodepeers};
-  return {eventprovider, events, asmbevent2, nodeinfo, nodepeers};
+  return {eventprovider, events, asmbevent2, buildburn, nodeinfo, nodepeers};
 }
 
 /**
@@ -1111,6 +1112,10 @@ async function displayContent() {
     myFetch(eventprovider+events+asmbevent2);
   const getasmb2status =
     myFetch(eventprovider+events+asmbevent2+'/status');
+  const getvotingevent1 =
+    myFetch(eventprovider+events+buildburn);
+  const buildburnstatus =
+    myFetch(eventprovider+events+buildburn+'/status');
   const elements = await Promise.allSettled([
     // getsaldo,
     // gettokens,
@@ -1119,6 +1124,8 @@ async function displayContent() {
     // getasmbstatus,
     // getsmrevent,
     // getsmrstatus,
+    getvotingevent1,
+    buildburnstatus,
     getasmb2status,
     getasmbevent2,
     getnodeinfo,
