@@ -52,7 +52,7 @@
     "colorette": "^2.0.19",
     "css-loader": "^6.6.0",
     "csv-loader": "^3.0.3",
-    "dotenv-webpack": "^7.1.0",
+    "dotenv-webpack": "^7.1.1",
     "eslint": "^8.18.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-vue": "^8.7.1",
