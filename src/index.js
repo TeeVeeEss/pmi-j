@@ -227,7 +227,27 @@ function iterate(data, type, strn, headern, detailn) {
   let start = '';
   let end = '';
   switch (typeofdata) {
+    case 'undefined':
+      break;
     case 'object':
+      // Check first of this data is an array
+      if (Array.isArray(data)) {
+        for (let a = 0; a < data.length; a++) {
+          if (typeof data[a] == 'object') {
+            // Nested Object, iterate it
+            const nestedarraymap = new Map(Object.entries(data[a]));
+            str += iterate(nestedarraymap, 'header', '', [], []);
+          } else {
+            // Simple row, collect all values in one cell
+            headers.push(data[a] +
+              // ' (' + (a+1) + ' of ' +
+              ' (' + data[a].length + ')');
+            // details.push(entry[1][a]);
+            details.push(data[a].toString());
+          }
+        }
+        break;
+      }
       for (const entry of data) {
         const typeofvalue = (entry[1] === entry[1] ? typeof entry[1] : 'undefined');
         switch (typeofvalue) {
@@ -665,6 +685,70 @@ function iterate(data, type, strn, headern, detailn) {
 //   return iota;
 // }
 
+
+/**
+ * Fetch info from Legacy Hornet.
+//  * @return {str} formatted html.
+*/
+async function divlegacyhornetinfo() {
+  // const curlcmdhttp = `curl -s http://xeevee.net:14965 -X POST -H 'X-IOTA-API-Version: legacy' -H 'Content-Type: application/json' -d '{"command": "getNodeInfo"}'|jq`;
+  // const fetchcmdhttp = fetch("http://xeevee.net:14965", {body: "{"command": "getNodeInfo"}",headers: {"Content-Type": "application/json","X-Iota-Api-Version": "legacy"},method: "POST"});
+  // const curlcmdssl = `curl -s https://xeevee.net:14267 -X POST -H 'X-IOTA-API-Version: legacy' -H 'Content-Type: application/json' -d '{"command": "getNodeInfo"}'|jq`;
+  // const fetchcmdssl = fetch("https://xeevee.net:14267", {body: "{"command": "getNodeInfo"}",headers: {"Content-Type": "application/json","X-Iota-Api-Version": "legacy"},method: "POST"});
+  // fetch('https://xeevee.net:14267', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-IOTA-API-Version': 'legacy'}, body: JSON.stringify({command: 'getNodeInfo'})})
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //     // enter you logic when the fetch is successful
+  //       console.log(data);
+  //     })
+  //     .catch((error) => {
+  //     // enter your logic for when there is an error (ex. error toast)
+  //       console.log(error);
+  //     });
+  // const myPromise = new Promise(async function(myResolve, myReject) {
+  const response = await fetch('http://xeevee.net:14965',
+      {
+        headers: {'Content-Type': 'application/json', 'X-IOTA-API-Version': 'legacy'},
+        method: 'POST',
+        body: JSON.stringify({command: 'getNodeInfo'}),
+      });
+  let content;
+  let url;
+  if (!response.ok) {
+    // throw new Error(`HTTP error! status: ${response.status}`);
+    myReject(swal('Oh noes!', 'The AJAX request failed! url: ' + response.url, 'error', {timer: 2000}));
+  } else {
+    url = response.url;
+    content = await response.json();
+    // console.log('content legacy: ', content);
+    return {url: url, content: content};
+    // myResolve(content);
+  }
+  // });
+  // return {url: url, content: content};
+  // myPromise.then(
+  //     function(value) {
+  //       console.log('content legacy: ', value);
+  //       return value;
+  //     },
+  //     function(error) {
+  //       return error;
+  //     },
+  // );
+  // const element = document.createElement('container');
+  // let elementstr = '<table class="table-striped table-hover table-bordered table-responsive table-dark" style="text-align:center">';
+  // elementstr += '<tr>';
+  // elementstr += '<th>Node name</th>';
+  // elementstr += '<th>API call</th>';
+  // elementstr += '</tr><tr>';
+  // elementstr += '<td>'+'xeevee.net legacy Hornet'+'</td>';
+  // elementstr += '<td>'+curlcmd+'</td>';
+  // elementstr += '</tr><tr><th colspan="4">Info</th></tr>';
+  // element.innerHTML = elementstr;
+
+  // return element;
+}
+
 // /**
 //  * Fetch node info from IRI endpoint.
 //  * iota.getNodeInfo to Show info of the IRI fullnode.
@@ -1034,12 +1118,44 @@ elementstr += '<tr>';
 elementstr += '<th>Node name</th>';
 elementstr += '<th>API call</th>';
 elementstr += '</tr><tr>';
-elementstr += '<td>'+'Apr2011 vBox'+'</td>';
-elementstr += '<td>'+'https://xeevee.ddns.net/api/plugins/participation'+
-  '</td>';
-elementstr += '</tr><tr><th colspan="4">Peers</th></tr>';
-// const {eventprovider, events, smrevent, asmbevent, parttokens, iotatokens, nodeinfo, nodepeers} = tobeFetched();
-const {eventprovider, events, buildburn, asmbevent2, nodeinfo, nodepeers} = tobeFetched();
+elementstr += '<td>'+'xeevee.net Legacy IOTA node'+'</td>';
+elementstr += '<td>'+'http://xeevee.net/14965, getNodeInfo'+
+  '</td></tr>';
+const getlegacynodeinfo = divlegacyhornetinfo();
+
+/**
+* Show info from legacy endpoint.
+* Show in console and div.
+// * @return {str} html
+**/
+async function displayLegacyNodeInfo() {
+  const elements = await Promise.allSettled([
+    getlegacynodeinfo]);
+  console.log('content legacy: ', elements);
+  elementstr += iterate(elements, 'header', '', [], []);
+  elementstr += '</tr>';
+  elementstr += '</table><p>==--__ End Iota Legacy Node__--==</p>';
+  elementstr += '<p>__--== Start Iota Mainnet Node ==--__</p>';
+  elementstr += '<table class="table-striped table-hover table-bordered table-responsive table-dark" style="text-align:center">';
+  elementstr += '<tr>';
+  elementstr += '<th>Node name</th>';
+  elementstr += '<th>API call</th>';
+  elementstr += '</tr><tr>';
+  elementstr += '<td>'+'Apr2011 vBox'+'</td>';
+  elementstr += '<td>'+'https://xeevee.ddns.net/api/plugins/participation'+
+    '</td>';
+  elementstr += '</tr><tr><th colspan="4">Peers</th></tr>';
+  const legacydiv = document.createElement('div');
+  legacydiv.innerHTML = elementstr;
+  legacydiv.classList.add('nodeinfo_STATIC');
+  console.log('legacydiv: ', legacydiv);
+  document.body.appendChild(legacydiv);
+  // Set a cross-site cookie for third-party contexts
+  document.cookie = 'SameSite=None; Secure';
+}
+displayLegacyNodeInfo();
+// const {eventprovider, events, smrevent, asmbevent, buildburn, asmbevent2, parttokens, iotatokens, nodeinfo, nodepeers} = tobeFetched();
+const {eventprovider, events, asmbevent3, nodeinfo, nodepeers} = tobeFetched();
 
 /**
 * Enumerate to be fetched calls.
@@ -1048,16 +1164,17 @@ const {eventprovider, events, buildburn, asmbevent2, nodeinfo, nodepeers} = tobe
 function tobeFetched() {
   const eventprovider = 'https://xeevee.ddns.net';
   const events = '/api/plugins/participation/events';
-  const asmbevent2 = '/90ab02d8f700fcb3b31ff577416ecb105697a664738bec45b626920337a280e0';
-  const buildburn = '/c8529ff64ea191b437cd625af8b02fd0173bc94aae380ea4cc3367a651536cba';
+  const asmbevent3 = '/758f9f6193c4ecc99b4b3c1a57a9cd3c6fc75f94e061d05361647d11ab8d06f6';
+  // const asmbevent2 = '/90ab02d8f700fcb3b31ff577416ecb105697a664738bec45b626920337a280e0';
+  // const buildburn = '/c8529ff64ea191b437cd625af8b02fd0173bc94aae380ea4cc3367a651536cba';
   // const asmbevent = '/57607d9f8cefc366c3ead71f5b1d76cef1b36a07eb775158c541107951d4aecb';
   // const smrevent = '/f6dbdad416e0470042d3fe429eb0e91683ba171279bce01be6d1d35a9909a981';
   // const iotatokens = '/api/v1/addresses/iota1qp853z2qtu386vkzdef4a36l7wl8wvcln9q24h0n5g0hcccyan9pc8fqz03';
   // const parttokens = '/api/plugins/participation/addresses/iota1qp853z2qtu386vkzdef4a36l7wl8wvcln9q24h0n5g0hcccyan9pc8fqz03';
   const nodeinfo = '/api/v1/info';
   const nodepeers = '/api/v1/peers';
-  // return {eventprovider, events, smrevent, asmbevent, parttokens, iotatokens, nodeinfo, nodepeers};
-  return {eventprovider, events, asmbevent2, buildburn, nodeinfo, nodepeers};
+  // return {eventprovider, events, smrevent, asmbevent, buildburn, asmbevent2, parttokens, iotatokens, nodeinfo, nodepeers};
+  return {eventprovider, events, asmbevent3, nodeinfo, nodepeers};
 }
 
 /**
@@ -1094,8 +1211,8 @@ async function displayContent() {
   //   myFetch(eventprovider+iotatokens);
   // const gettokens =
   //   myFetch(eventprovider+parttokens);
-  // const getevents =
-  //   myFetch(eventprovider+events);
+  const getevents =
+    myFetch(eventprovider+events);
   // const getasmbevent =
   //   myFetch(eventprovider+events+asmbevent);
   // const getasmbstatus =
@@ -1104,30 +1221,35 @@ async function displayContent() {
   //   myFetch(eventprovider+events+smrevent);
   // const getsmrstatus =
   //   myFetch(eventprovider+events+smrevent+'/status');
+  // const getlegacynodeinfo = divlegacyhornetinfo();
   const getnodeinfo =
     myFetch(eventprovider+nodeinfo);
   const getnodepeers =
     myFetch(eventprovider+nodepeers);
-  const getasmbevent2 =
-    myFetch(eventprovider+events+asmbevent2);
-  const getasmb2status =
-    myFetch(eventprovider+events+asmbevent2+'/status');
-  const getvotingevent1 =
-    myFetch(eventprovider+events+buildburn);
-  const buildburnstatus =
-    myFetch(eventprovider+events+buildburn+'/status');
+  const getasmbevent3 =
+    myFetch(eventprovider+events+asmbevent3);
+  // const getasmbevent2 =
+    // myFetch(eventprovider+events+asmbevent2);
+  // const getasmb2status =
+    // myFetch(eventprovider+events+asmbevent2+'/status');
+  // const getvotingevent1 =
+    // myFetch(eventprovider+events+buildburn);
+  // const buildburnstatus =
+    // myFetch(eventprovider+events+buildburn+'/status');
   const elements = await Promise.allSettled([
     // getsaldo,
     // gettokens,
-    // getevents,
+    getevents,
     // getasmbevent,
     // getasmbstatus,
     // getsmrevent,
     // getsmrstatus,
-    getvotingevent1,
-    buildburnstatus,
-    getasmb2status,
-    getasmbevent2,
+    // getlegacynodeinfo,
+    // getvotingevent1,
+    // buildburnstatus,
+    // getasmb2status,
+    // getasmbevent2,
+    getasmbevent3,
     getnodeinfo,
     getnodepeers]);
   for (const entry of elements) {
