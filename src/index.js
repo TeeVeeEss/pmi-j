@@ -1155,7 +1155,7 @@ async function displayLegacyNodeInfo() {
 }
 displayLegacyNodeInfo();
 // const {eventprovider, events, smrevent, asmbevent, buildburn, asmbevent2, parttokens, iotatokens, nodeinfo, nodepeers} = tobeFetched();
-const {eventprovider, events, asmbevent3, nodeinfo, nodepeers} = tobeFetched();
+const {eventprovider, events, asmbevent4, parttokens, iotatokens, nodeinfo, nodepeers} = tobeFetched();
 
 /**
 * Enumerate to be fetched calls.
@@ -1164,17 +1164,18 @@ const {eventprovider, events, asmbevent3, nodeinfo, nodepeers} = tobeFetched();
 function tobeFetched() {
   const eventprovider = 'https://xeevee.ddns.net';
   const events = '/api/plugins/participation/events';
-  const asmbevent3 = '/758f9f6193c4ecc99b4b3c1a57a9cd3c6fc75f94e061d05361647d11ab8d06f6';
+  const asmbevent4 = '/758f9f6193c4ecc99b4b3c1a57a9cd3c6fc75f94e061d05361647d11ab8d06f6';
+  // const asmbevent3 = '/79958d5ccaaa81cea1dc8b589655d369b16c72f27a44433ba22c5b0a7dc89356';
   // const asmbevent2 = '/90ab02d8f700fcb3b31ff577416ecb105697a664738bec45b626920337a280e0';
   // const buildburn = '/c8529ff64ea191b437cd625af8b02fd0173bc94aae380ea4cc3367a651536cba';
   // const asmbevent = '/57607d9f8cefc366c3ead71f5b1d76cef1b36a07eb775158c541107951d4aecb';
   // const smrevent = '/f6dbdad416e0470042d3fe429eb0e91683ba171279bce01be6d1d35a9909a981';
-  // const iotatokens = '/api/v1/addresses/iota1qp853z2qtu386vkzdef4a36l7wl8wvcln9q24h0n5g0hcccyan9pc8fqz03';
-  // const parttokens = '/api/plugins/participation/addresses/iota1qp853z2qtu386vkzdef4a36l7wl8wvcln9q24h0n5g0hcccyan9pc8fqz03';
+  const iotatokens = '/api/v1/addresses/iota1qpfe7u79y9ghcghhvtq45ek7uajfx93grcgj69gc3tcevl7lhkc0g9h9xed';
+  const parttokens = '/api/plugins/participation/addresses/iota1qpfe7u79y9ghcghhvtq45ek7uajfx93grcgj69gc3tcevl7lhkc0g9h9xed';
   const nodeinfo = '/api/v1/info';
   const nodepeers = '/api/v1/peers';
   // return {eventprovider, events, smrevent, asmbevent, buildburn, asmbevent2, parttokens, iotatokens, nodeinfo, nodepeers};
-  return {eventprovider, events, asmbevent3, nodeinfo, nodepeers};
+  return {eventprovider, events, asmbevent4, iotatokens, parttokens, nodeinfo, nodepeers};
 }
 
 /**
@@ -1207,10 +1208,10 @@ async function myFetch(type = '') {
 * @return {str} html
 **/
 async function displayContent() {
-  // const getsaldo =
-  //   myFetch(eventprovider+iotatokens);
-  // const gettokens =
-  //   myFetch(eventprovider+parttokens);
+  const getsaldo =
+    myFetch(eventprovider+iotatokens);
+  const gettokens =
+    myFetch(eventprovider+parttokens);
   const getevents =
     myFetch(eventprovider+events);
   // const getasmbevent =
@@ -1226,8 +1227,8 @@ async function displayContent() {
     myFetch(eventprovider+nodeinfo);
   const getnodepeers =
     myFetch(eventprovider+nodepeers);
-  const getasmbevent3 =
-    myFetch(eventprovider+events+asmbevent3);
+  const getasmbevent4 =
+    myFetch(eventprovider+events+asmbevent4);
   // const getasmbevent2 =
     // myFetch(eventprovider+events+asmbevent2);
   // const getasmb2status =
@@ -1237,8 +1238,8 @@ async function displayContent() {
   // const buildburnstatus =
     // myFetch(eventprovider+events+buildburn+'/status');
   const elements = await Promise.allSettled([
-    // getsaldo,
-    // gettokens,
+    getsaldo,
+    gettokens,
     getevents,
     // getasmbevent,
     // getasmbstatus,
@@ -1249,7 +1250,8 @@ async function displayContent() {
     // buildburnstatus,
     // getasmb2status,
     // getasmbevent2,
-    getasmbevent3,
+    // getasmbevent3,
+    getasmbevent4,
     getnodeinfo,
     getnodepeers]);
   for (const entry of elements) {
@@ -1279,11 +1281,11 @@ setInterval(function() {
 );
 
 // https://xeevee.ddns.net/api/plugins/participation/addresses
-// /iota1qp853z2qtu386vkzdef4a36l7wl8wvcln9q24h0n5g0hcccyan9pc8fqz03
+// /iota1qpfe7u79y9ghcghhvtq45ek7uajfx93grcgj69gc3tcevl7lhkc0g9h9xed
 
 // async function showevent() {
 //   const event1 = 'https://xeevee.ddns.net/api/plugins/participation/events/'+
-//   'f6dbdad416e0470042d3fe429eb0e91683ba171279bce01be6d1d35a9909a981';
+//   'iota1qpfe7u79y9ghcghhvtq45ek7uajfx93grcgj69gc3tcevl7lhkc0g9h9xed';
 //   const result1 = await fetch(event1);
 //   const json = result1.json();
 //   result1
