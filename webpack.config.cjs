@@ -1,7 +1,8 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+// eslint-disable-next-line no-unused-vars
 const nodeExternals = require('webpack-node-externals');
 const ESLintPlugin = require('eslint-webpack-plugin');
 module.exports = {
@@ -14,7 +15,7 @@ module.exports = {
   },
   watchOptions: {
     aggregateTimeout: 600,
-    poll: 3000
+    poll: 3000,
   },
   devtool: 'inline-source-map',
   devServer: {
@@ -25,22 +26,22 @@ module.exports = {
     // disableHostCheck: true,
     historyApiFallback: true,
     headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-      "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Authorization, X-IOTA-API-Version"
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+      'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type, Authorization, X-IOTA-API-Version',
     },
     proxy: {
       '/api': {
-      target: 'http://192.168.50.82:14267',
-      secure: false
-      }
-    }
+        target: 'http://192.168.50.82:14267',
+        secure: false,
+      },
+    },
   },
   resolve: {
     fallback: {
-      "crypto": require.resolve("crypto-browserify"),
-      "stream": require.resolve("stream-browserify")
-    }
+      'crypto': require.resolve('crypto-browserify'),
+      'stream': require.resolve('stream-browserify'),
+    },
   },
   plugins: [
     new ESLintPlugin(),
@@ -48,19 +49,19 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: 'IOTA ES6 Peer manager DEV-version',
       template: './src/index.html',
-      favicon: "./src/favicon.ico",
+      favicon: './src/favicon.ico',
       inject: true,
       minify: {
         removeComments: true,
-        collapseWhitespace: false
-      }
+        collapseWhitespace: false,
+      },
     }),
     new Dotenv({
       path: './pmij.env', // load this now instead of the ones in '.env'
       safe: true, // load '.env.example' to verify the '.env' variables are all set. Can also be a string to a different file.
       systemvars: true, // load all the predefined 'process.env' variables which will trump anything local per dotenv specs.
       silent: false, // hide any errors
-      defaults: false // load '.env.defaults' as the default values if empty.
+      defaults: false, // load '.env.defaults' as the default values if empty.
     }),
   ],
   output: {

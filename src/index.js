@@ -1155,7 +1155,7 @@ async function displayLegacyNodeInfo() {
 }
 displayLegacyNodeInfo();
 // const {eventprovider, events, smrevent, asmbevent, buildburn, asmbevent2, parttokens, iotatokens, nodeinfo, nodepeers} = tobeFetched();
-const {eventprovider, events, asmbevent4, parttokens, iotatokens, nodeinfo, nodepeers} = tobeFetched();
+const {eventprovider, events, asmbevent4, iotatokens, parttokens, nodeinfo, nodepeers} = tobeFetched();
 
 /**
 * Enumerate to be fetched calls.
