@@ -41,6 +41,7 @@
     "jsonfile": "^6.1.0",
     "lodash": "^4.17.21",
     "minimist": "^1.2.7",
+    "node-loader": "^2.0.0",
     "qs": "^6.11.0",
     "socket.io": "^4.5.3",
     "stream-browserify": "^3.0.0",

@@ -7,6 +7,11 @@ const nodeExternals = require('webpack-node-externals');
 const ESLintPlugin = require('eslint-webpack-plugin');
 module.exports = {
   mode: 'development',
+  target: 'node',
+  externals: [nodeExternals()], // in order to ignore all modules in node_modules folder
+  node: {
+    __dirname: false,
+  },
   entry: {
     app: './src/index.js',
   },
@@ -70,6 +75,10 @@ module.exports = {
   },
   module: {
     rules: [
+      {
+        test: /\.node$/,
+        loader: 'node-loader',
+      },
       {
         test: /\.css$/,
         use: [

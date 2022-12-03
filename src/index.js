@@ -9,12 +9,24 @@ import './style.css';
 import swal from 'sweetalert';
 // // import yargs from 'yargs';
 
-// // const { ClientBuilder } = require('@iota/client')
-// // import {ClientBuilder} from '@iota/client';
-// // const client = new ClientBuilder()
-// //    .node('https://api.lb-0.testnet.chrysalis2.com')
-// //    .build();
-// // client.getInfo().then(console.log).catch(console.error);
+// const {ClientBuilder} = require('@iota/client');
+import {Client} from '@iota/client';
+// eslint-disable-next-line require-jsdoc
+async function run() {
+  const client = new Client({
+    nodes: ['https://stardust.xeevee.net'],
+    localPow: true,
+  });
+
+  try {
+    const nodeInfo = await client.getInfo();
+    console.log('Node info: ', nodeInfo);
+  } catch (error) {
+    console.error('Error: ', error);
+  }
+}
+
+run();
 
 // // const {SingleNodeClient} = require('@iota/iota.js');
 // import {SingleNodeClient} from '@iota/iota.js';

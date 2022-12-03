@@ -42,7 +42,8 @@ const commentData = {
  */
 function Comment({comment}) {
   const nestedComments = (comment.children || []).map((comment) => {
-    return <Comment key={comment.id} comment={comment} type="child" />;
+    return ( 
+      <Comment key={comment.id} comment={comment} type="child" />)
   });
 
   return (
