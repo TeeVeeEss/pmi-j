@@ -9,59 +9,30 @@ import './style.css';
 import swal from 'sweetalert';
 // // import yargs from 'yargs';
 
-// // const { ClientBuilder } = require('@iota/client')
-// // import {ClientBuilder} from '@iota/client';
-// // const client = new ClientBuilder()
-// //    .node('https://api.lb-0.testnet.chrysalis2.com')
-// //    .build();
-// // client.getInfo().then(console.log).catch(console.error);
+// const { Client, initLogger } = require('@iota/client')
+import {Client, initLogger} from '@iota/client';
+// eslint-disable-next-line require-jsdoc
+async function run() {
+  initLogger();
+  if (!process.env.NODE_URL) {
+    throw new Error('.env NODE_URL is undefined, see .env.example');
+  }
 
-// // const {SingleNodeClient} = require('@iota/iota.js');
-// import {SingleNodeClient} from '@iota/iota.js';
+  const client = new Client({
+    // Insert your node URL in the .env.
+    nodes: [process.env.NODE_URL],
+    localPow: true,
+  });
 
-// // SMR-event: https://xeevee.ddns.net/api/plugins/participation/events/f6dbdad416e0470042d3fe429eb0e91683ba171279bce01be6d1d35a9909a981/status
-// /**
-//  * Example for use of new lib iota.js
-//  */
-// async function run() {
-//   const client = new SingleNodeClient('https://xeevee.ddns.net');
-//   const info = await client.info();
-//   const swaldiv = document.createElement('div');
-//   swaldiv.innerHTML = '' +
-//     'Node URL: https://xeevee.ddns.net'+
-//     '\tName: '+ info.name+
-//     '\tVersion: '+ info.version+
-//     '\tIs Healthy: '+ info.isHealthy+
-//     '\tNetwork Id: '+ info.networkId+
-//     '\tLatest Milestone Index: '+ info.latestMilestoneIndex+
-//     '\tConfirmed Milestone Index: '+ info.confirmedMilestoneIndex+
-//     '\tPruning Index: '+ info.pruningIndex+
-//     '\tFeatures: '+ info.features+
-//     '\tMin PoW Score: '+ info.minPoWScore;
-//   const swaltext = swaldiv.text;
-//   swal({
-//     title: 'iota.js Sample fetching Node info',
-//     background: 'gray',
-//     // content: swaldiv,
-//     text: swaltext,
-//     icon: 'info',
-//     timer: 5000,
-//   });
-//   console.log('Node URL: https://xeevee.ddns.net');
-//   console.log('\tNode Info');
-//   console.log('\tName:', info.name);
-//   console.log('\tVersion:', info.version);
-//   console.log('\tIs Healthy:', info.isHealthy);
-//   console.log('\tNetwork Id:', info.networkId);
-//   console.log('\tLatest Milestone Index:', info.latestMilestoneIndex);
-//   console.log('\tConfirmed Milestone Index:', info.confirmedMilestoneIndex);
-//   console.log('\tPruning Index:', info.pruningIndex);
-//   console.log('\tFeatures:', info.features);
-//   console.log('\tMin PoW Score:', info.minPoWScore);
-// }
-// run()
-//     .then(() => console.log('Done'))
-//     .catch((err) => console.error(err));
+  try {
+    const nodeInfo = await client.getInfo();
+    console.log('Node info: ', nodeInfo);
+  } catch (error) {
+    console.error('Error: ', error);
+  }
+}
+
+run();
 
 /**
  * Take a single camel case string and convert it to a string of separate

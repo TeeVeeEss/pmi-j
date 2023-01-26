@@ -67,3 +67,5 @@ pmij.env
 
 # vscode settings
 .vscode
+public/hussel.html
+public/testhussels.js

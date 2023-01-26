@@ -6,6 +6,10 @@ const Dotenv = require('dotenv-webpack');
 const nodeExternals = require('webpack-node-externals');
 const ESLintPlugin = require('eslint-webpack-plugin');
 module.exports = {
+  // target: 'node',
+  // node: {
+  //   __dirname: false,
+  // },
   mode: 'development',
   entry: {
     app: './src/index.js',
@@ -29,6 +33,9 @@ module.exports = {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
       'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type, Authorization, X-IOTA-API-Version',
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Resource-Policy': 'same-origin',
     },
     proxy: {
       '/api': {
@@ -41,6 +48,7 @@ module.exports = {
     fallback: {
       'crypto': require.resolve('crypto-browserify'),
       'stream': require.resolve('stream-browserify'),
+      'path': require.resolve('path-browserify'),
     },
   },
   plugins: [
@@ -70,6 +78,10 @@ module.exports = {
   },
   module: {
     rules: [
+      {
+        test: /\.node$/,
+        loader: 'node-loader',
+      },
       {
         test: /\.css$/,
         use: [
