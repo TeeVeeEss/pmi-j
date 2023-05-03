@@ -2,22 +2,30 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+// // eslint-disable-next-line no-unused-vars
+// const nodeExternals = require('webpack-node-externals');
+// const ESLintPlugin = require('eslint-webpack-plugin');
 const webpack = require('webpack');
 const os = require('os');
-// eslint-disable-next-line no-unused-vars
-const nodeExternals = require('webpack-node-externals');
-const ESLintPlugin = require('eslint-webpack-plugin');
 module.exports = {
-  // target: 'node',
-  // node: {
-  //   __dirname: false,
-  // },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+      },
+    },
+  },
+  target: 'node',
+  node: {
+    __dirname: false,
+  },
   mode: 'development',
   entry: {
     app: './src/index.js',
-  },
-  stats: {
-    builtAt: true,
   },
   watchOptions: {
     aggregateTimeout: 600,
@@ -31,17 +39,9 @@ module.exports = {
     port: 9876,
     // disableHostCheck: true,
     historyApiFallback: true,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-      'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type, Authorization, X-IOTA-API-Version',
-      'Cross-Origin-Embedder-Policy': 'require-corp',
-      'Cross-Origin-Opener-Policy': 'same-origin',
-      'Cross-Origin-Resource-Policy': 'same-origin',
-    },
     proxy: {
       '/api': {
-        target: 'http://192.168.50.82:14267',
+        target: 'http://192.168.50.82:14265',
         secure: false,
       },
     },
@@ -60,12 +60,11 @@ module.exports = {
     },
   },
   plugins: [
-    new ESLintPlugin(),
+    // new ESLintPlugin(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       title: 'IOTA ES6 Peer manager DEV-version',
       template: './src/index.html',
-      favicon: './src/favicon.ico',
       inject: true,
       minify: {
         removeComments: true,
@@ -76,7 +75,7 @@ module.exports = {
       path: './pmij.env', // load this now instead of the ones in '.env'
       safe: true, // load '.env.example' to verify the '.env' variables are all set. Can also be a string to a different file.
       systemvars: true, // load all the predefined 'process.env' variables which will trump anything local per dotenv specs.
-      silent: false, // hide any errors
+      silent: true, // hide any errors
       defaults: false, // load '.env.defaults' as the default values if empty.
     }),
     new webpack.ProvidePlugin({
