@@ -31,7 +31,7 @@
     "@iota/iota.js": "^1.8.6",
     "@iota/wallet": "^2.0.3-rc.27",
     "async": "^3.2.5",
-    "@snyk/protect": "^1.1247.0",
+    "@snyk/protect": "^1.1266.0",
     "bunyan": "^1.8.15",
     "express": "^4.18.2",
     "express-basic-auth": "^1.2.0",
