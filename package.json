@@ -6,7 +6,7 @@
     "@snyk/protect": "^1.1300.2",
     "async": "^3.2.3",
     "bunyan": "^1.8.15",
-    "express": "^4.18.2",
+    "express": "^4.22.1",
     "express-basic-auth": "^1.2.0",
     "express-rate-limit": "^8.2.1",
     "gentelella": "^1.4.0",
