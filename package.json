@@ -13,7 +13,7 @@
     "jsonfile": "^6.1.0",
     "lodash": "^4.17.21",
     "minimist": "^1.2.8",
-    "qs": "^6.11.1",
+    "qs": "^6.14.2",
     "socket.io": "^4.7.2",
     "stream-browserify": "^3.0.0",
     "sweetalert": "^2.1.2",
@@ -39,7 +39,7 @@
     "stream-http": "^3.2.0",
     "style-loader": "^3.3.2",
     "url": "^0.11.3",
-    "webpack": "^5.102.1",
+    "webpack": "^5.104.1",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^5.2.2",
     "webpack-node-externals": "^3.0.0"
