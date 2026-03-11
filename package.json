@@ -8,7 +8,7 @@
     "bunyan": "^1.8.15",
     "express": "^4.22.1",
     "express-basic-auth": "^1.2.0",
-    "express-rate-limit": "^8.2.1",
+    "express-rate-limit": "^8.2.2",
     "gentelella": "^1.4.0",
     "jsonfile": "^6.1.0",
     "lodash": "^4.17.21",
