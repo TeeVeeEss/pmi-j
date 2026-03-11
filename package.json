@@ -11,7 +11,7 @@
     "express-rate-limit": "^8.2.1",
     "gentelella": "^1.4.0",
     "jsonfile": "^6.1.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "minimist": "^1.2.8",
     "qs": "^6.14.1",
     "socket.io": "^4.7.2",
